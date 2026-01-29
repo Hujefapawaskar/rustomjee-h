@@ -38,7 +38,6 @@ export function InstancedTrees({
     fetch(`/tree-data/${jsonFile}`)
       .then((res) => res.json())
       .then((data) => {
-        console.log(`Loaded ${data.count} instances from ${jsonFile}`);
         setInstances(data.instances);
       })
       .catch((err) => console.error(`Error loading ${jsonFile}:`, err));
@@ -75,9 +74,7 @@ export function InstancedTrees({
     });
 
     meshRef.current.instanceMatrix.needsUpdate = true;
-    console.log(
-      `✅ Updated ${instances.length} instances of ${meshName} at Y=${yPosition}`
-    );
+    
   }, [
     instances,
     meshName,

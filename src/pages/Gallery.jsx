@@ -488,7 +488,7 @@ export default function StorySlider({
         {/* Title - Left Bottom */}
         {slide.title && (
           <div className="absolute left-6 sm:left-10 md:left-20 lg:left-30 bottom-16 sm:bottom-20 md:bottom-28 lg:bottom-40 z-30">
-            <h2 className="slide-title text-white tracking-wide font-futura-medium text-lg sm:text-xl md:text-2xl lg:text-4xl uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] opacity-0">
+            <h2 className="slide-title text-white tracking-wide font-futura-bk text-lg sm:text-xl md:text-2xl lg:text-4xl uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] opacity-0">
               {slide.title}
             </h2>
           </div>

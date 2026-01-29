@@ -174,7 +174,7 @@ useEffect(() => {
         {/* Heading */}
         <div className="">
 
-        <h2 className="text-2xl font-bold text-gray-800 font-futura-medium  mb-3 max-sm:text-[12px] max-sm:mb-0 max-md:text-[12px] max-md:mb-1 max-lg:text-[22px] max-lg:mb-1 max-xl:text-md max-xl:mb-2 max-3xl:text-3xl max-4xl:text-4xl">{currentPath.name}</h2>
+        <h2 className="text-2xl   text-gray-800 font-futura-medium  mb-3 max-sm:text-[12px] max-sm:mb-0 max-md:text-[12px] max-md:mb-1 max-lg:text-[22px] max-lg:mb-1 max-xl:text-md max-xl:mb-2 max-3xl:text-3xl max-4xl:text-4xl">{currentPath.name}</h2>
 
         {/* Description */}
         <p className="text-gray-600  text-sm  font-futura-medium  max-sm:text-[10px] max-md:text-[10px]  max-lg:text-xs max-xl:text-sm max-3xl:text-lg max-4xl:text-2xl">
@@ -187,11 +187,11 @@ useEffect(() => {
           <div className="flex justify-between items-center">
             <div>
               <p className="text-xs font-futura-medium  max-sm:text-[10px] max-md:text-[8px] max-lg:text-[13px] max-xl:text-md max-3xl:text-xl max-4xl:text-2xl">Distance</p>
-              <p className="text-2xl  font-bold font-futura-medium  max-sm:text-[10px] max-md:text-[8px] max-lg:text-[14px]  max-xl:text-sm">{getDistance()}</p>
+              <p className="text-2xl    font-futura-medium  max-sm:text-[10px] max-md:text-[8px] max-lg:text-[14px]  max-xl:text-sm">{getDistance()}</p>
             </div>
             <div>
               <p className="text-xs font-futura-medium  max-sm:text-[10px]  max-md:text-[8px] max-lg:text-[13px] max-xl:text-md  max-3xl:text-xl max-4xl:text-2xl">Est. Time</p>
-              <p className="text-2xl font-bold  font-futura-medium  max-sm:text-[10px] max-md:text-[8px] max-lg:text-[14px] max-xl:text-sm ">{getTime()}</p>
+              <p className="text-2xl    font-futura-medium  max-sm:text-[10px] max-md:text-[8px] max-lg:text-[14px] max-xl:text-sm ">{getTime()}</p>
             </div>
           </div>
         </div>
@@ -219,7 +219,7 @@ useEffect(() => {
                 `}
               >
                 <mode.icon className="text-2xl max-sm:text-[12px] max-md:text-[12px] max-lg:text-[17px] max-xl:text-[20px] max-3xl:text-2xl max-4xl:text-4xl" />
-                <span className="text-xs font-medium font-regular max-sm:text-[10px] max-md:text-[10px] max-lg:text-[13px] max-xl:text-xs max-3xl:font-bold max-3xl:text-sm max-4xl:font-bold max-4xl:text-lg">{mode.label}</span>
+                <span className="text-xs font-medium font-regular max-sm:text-[10px] max-md:text-[10px] max-lg:text-[13px] max-xl:text-xs max-3xl:  max-3xl:text-sm max-4xl:  max-4xl:text-lg">{mode.label}</span>
               </button>
             ))}
           </div>

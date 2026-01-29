@@ -458,7 +458,7 @@ import { RoadClickSampler } from "./Roadsampler";
 
         let mat = materials[n.material?.name];
 
-        console.log(key);
+       
 
         if (key === "Sea_Land_1" || key === "Sea_Land") {
           return null;
