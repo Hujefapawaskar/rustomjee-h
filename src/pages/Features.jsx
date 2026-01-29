@@ -447,20 +447,10 @@ const BuildingShowcaseSlide = ({ data }) => {
       />
 
       <div className="absolute inset-0 flex">
-        {/* Left - Building/Cityscape Image */}
-        <div className="w-[60%] sm:w-[60%] md:w-[62%] lg:w-[63%] xl:w-[64%] 2xl:w-[65%] 3xl:w-[65%] 4xl:w-[65%] relative h-full overflow-hidden group cursor-pointer flex items-center">
-          <img
-            src={data.buildingImageSrc}
-            className="w-full h-auto object-cover object-[80%_50%] text-element transition-all duration-700 ease-out group-hover:scale-105"
-            alt=""
-          />
-          <div className="absolute inset-0 bg-black/0  transition-all duration-500" />
-        </div>
-
-        {/* Right - Title and Squares */}
+        {/* Left - Title and Squares */}
         <div className="w-[40%] sm:w-[40%] md:w-[38%] lg:w-[37%] xl:w-[36%] 2xl:w-[35%] 3xl:w-[35%] 4xl:w-[35%] px-3 py-4 sm:px-4 sm:py-5 md:px-5 md:py-6 lg:px-6 lg:py-8 xl:px-8 xl:py-10 2xl:px-14 2xl:py-16 3xl:px-20 3xl:py-20 4xl:px-28 4xl:py-28 flex flex-col justify-between h-full">
           {/* Title at top */}
-          <div className="text-right">
+          <div className="text-left">
             <h2 className="text-black text-[9px] sm:text-[10px] md:text-xs lg:text-sm xl:text-lg 2xl:text-2xl 3xl:text-3xl 4xl:text-4xl font-futura-bk uppercase tracking-widest whitespace-pre-line leading-tight text-element">
               {data.title}
             </h2>
@@ -469,13 +459,24 @@ const BuildingShowcaseSlide = ({ data }) => {
           {/* Spacer */}
           <div className="flex-1"></div>
 
-          {/* Accent Squares at bottom right */}
+          {/* Accent Squares at bottom left */}
           <AccentSquares
             accentSquares={data.accentSquares}
             seaBoxSrc={data.seaBoxSrc}
             squaresPosition={data.squaresPosition}
           />
         </div>
+
+        {/* Right - Building/Cityscape Image */}
+        <div className="w-[60%] sm:w-[60%] md:w-[62%] lg:w-[63%] xl:w-[64%] 2xl:w-[65%] 3xl:w-[65%] 4xl:w-[65%] relative h-full overflow-hidden group cursor-pointer flex items-center">
+          <img
+            src={data.buildingImageSrc}
+            className="w-full h-auto object-cover object-[80%_50%] text-element transition-all duration-700 ease-out group-hover:scale-105"
+            alt=""
+          />
+          <div className="absolute inset-0 bg-black/0  transition-all duration-500" />
+        </div>
+        
       </div>
     </div>
   );

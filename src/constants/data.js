@@ -297,14 +297,14 @@ export const slidesData = [
     title: "Edge Perspective",
   },
   {
-    id: 23,
-    src: "/video/5.mp4",
+    id: 24,
+    src: "/video/6.mp4",
     category: "exterior",
     title: "The Tower",
   },
   {
-    id: 24,
-    src: "/video/6.mp4",
+    id: 23,
+    src: "/video/5.mp4",
     category: "exterior",
     title: "The Tower",
   },

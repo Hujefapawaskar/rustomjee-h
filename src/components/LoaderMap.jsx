@@ -72,15 +72,15 @@ const Loader = () => {
         </div>
 
         <div className="mt-3 flex items-center justify-between text-xs text-white/70">
-          <div className="truncate max-w-[70%]">
+          {/* <div className="truncate max-w-[70%]">
             {progress === 100 && !sceneReady
               ? "Initializing…"
               : item
               ? item.split("/").pop()
               : "Preparing…"}
-          </div>
+          </div> */}
           <div className="tabular-nums">
-            <span ref={numRef}>0</span>% · {loaded}/{total}
+            <span ref={numRef}>0</span>% 
           </div>
         </div>
       </div>

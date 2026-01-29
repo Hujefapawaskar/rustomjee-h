@@ -11,7 +11,12 @@ import gsap from "gsap";
 import PathCard from "./PathCard";
 
 export default function UIButtons() {
-  const { setSelectedCategory, setSelectedPath, selectedCategory, selectedPath } = usePaths();
+  const {
+    setSelectedCategory,
+    setSelectedPath,
+    selectedCategory,
+    selectedPath,
+  } = usePaths();
   const buttonRefs = useRef({});
   const liquidRefs = useRef({});
   const iconRefs = useRef({});
@@ -40,14 +45,19 @@ export default function UIButtons() {
 
   // Function to calculate and update position
   const updatePathButtonsPosition = useCallback(() => {
-    if (selectedCategory && buttonRefs.current[selectedCategory] && categoryContainerRef.current) {
+    if (
+      selectedCategory &&
+      buttonRefs.current[selectedCategory] &&
+      categoryContainerRef.current
+    ) {
       const button = buttonRefs.current[selectedCategory];
       const container = categoryContainerRef.current;
-      
+
       const buttonRect = button.getBoundingClientRect();
       const containerRect = container.getBoundingClientRect();
 
-      const leftPosition = buttonRect.left - containerRect.left + buttonRect.width / 2;
+      const leftPosition =
+        buttonRect.left - containerRect.left + buttonRect.width / 2;
       setPathButtonsPosition({ left: leftPosition });
     }
   }, [selectedCategory]);
@@ -63,8 +73,8 @@ export default function UIButtons() {
       updatePathButtonsPosition();
     };
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [updatePathButtonsPosition]);
 
   // Update position after short delay to ensure DOM is fully rendered
@@ -94,7 +104,7 @@ export default function UIButtons() {
             scale: 1,
             duration: 0.3,
             ease: "back.out(1.7)",
-          }
+          },
         );
 
         // Animate individual path buttons
@@ -111,7 +121,7 @@ export default function UIButtons() {
             duration: 0.3,
             stagger: 0.05,
             ease: "power2.out",
-          }
+          },
         );
       }
     }
@@ -121,11 +131,15 @@ export default function UIButtons() {
   useEffect(() => {
     const handleClickOutside = (event) => {
       // Check if click is inside the container OR the path card
-      const isInsideContainer = containerRef.current && containerRef.current.contains(event.target);
-      const isInsidePathCard = pathCardRef.current && pathCardRef.current.contains(event.target);
-      
+      const isInsideContainer =
+        containerRef.current && containerRef.current.contains(event.target);
+      const isInsidePathCard =
+        pathCardRef.current && pathCardRef.current.contains(event.target);
+
       // Check if click is on a portfolio card on the map
-      const isPortfolioCard = event.target.closest('[data-portfolio-card="true"]');
+      const isPortfolioCard = event.target.closest(
+        '[data-portfolio-card="true"]',
+      );
 
       if (!isInsideContainer && !isInsidePathCard && !isPortfolioCard) {
         // Reset all button liquids
@@ -145,14 +159,14 @@ export default function UIButtons() {
 
           if (icon) {
             gsap.to(icon, {
-              color: "#4A5568",
+              color: "#fffff",
               duration: 0.3,
             });
           }
 
           if (text) {
             gsap.to(text, {
-              color: "#4A5568",
+              color: "#fffff",
               duration: 0.3,
             });
           }
@@ -235,14 +249,14 @@ export default function UIButtons() {
     if (!isSelected) {
       if (icon) {
         gsap.to(icon, {
-          color: "#4A5568",
+          color: "#fffff",
           duration: 0.3,
         });
       }
 
       if (text) {
         gsap.to(text, {
-          color: "#4A5568",
+          color: "#fffff",
           duration: 0.3,
         });
       }
@@ -267,14 +281,14 @@ export default function UIButtons() {
 
       if (prevIcon) {
         gsap.to(prevIcon, {
-          color: "#4A5568",
+          color: "#fffff",
           duration: 0.3,
         });
       }
 
       if (prevText) {
         gsap.to(prevText, {
-          color: "#4A5568",
+          color: "#fffff",
           duration: 0.3,
         });
       }
@@ -341,13 +355,15 @@ export default function UIButtons() {
   return (
     <>
       {/* Path Card */}
-      {selectedPath && getCurrentPathData() && selectedCategory !== "portfolio" && (
-        <PathCard 
-          path={getCurrentPathData()} 
-          onClose={handleCloseCard}
-          cardRef={pathCardRef}
-        />
-      )}
+      {selectedPath &&
+        getCurrentPathData() &&
+        selectedCategory !== "portfolio" && (
+          <PathCard
+            path={getCurrentPathData()}
+            onClose={handleCloseCard}
+            cardRef={pathCardRef}
+          />
+        )}
 
       <div
         className="absolute bottom-8 z-9999 left-1/2 -translate-x-1/2 max-sm:bottom-2 max-md:bottom-2 max-lg:bottom-2 max-xl:bottom-2 max-2xl:bottom-2"
@@ -355,85 +371,99 @@ export default function UIButtons() {
       >
         {/* CATEGORY BUTTONS */}
 
-        <div 
-          ref={categoryContainerRef}
-          className="flex gap-2 bg-white p-1 rounded-xs shadow-2xl text-[#4A5568] relative max-sm:gap-0.5 max-sm:p-0.5 max-md:gap-0.5 max-md:p-0.5 max-lg:gap-0.5 max-lg:p-1 max-xl:gap-0.5 max-xl:p-1"
+        <div
+          className="absolute bottom-8 z-9999 left-1/2 -translate-x-1/2 max-sm:bottom-2 max-md:bottom-2 max-lg:bottom-2 max-xl:bottom-2 max-2xl:bottom-2"
+          ref={containerRef}
         >
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              ref={(el) => (buttonRefs.current[cat.id] = el)}
-              data-selected={selectedCategory === cat.id}
-              className="
-            p-2
-            flex flex-col items-center justify-center gap-1
-            rounded-md
-            relative
-            overflow-hidden
-            max-sm:p-1
-            max-sm:rounded-sm
-            max-sm:gap-0
-            max-sm:px-0.5
-            max-md:p-1
-            max-md:rounded-sm
-            max-md:gap-0
-            max-md:px-0.5
-            max-lg:p-1
-            max-lg:rounded-xs
-            max-lg:gap-0
-            max-lg:px-0.5
-            
-            "
-              onClick={() => handleCategoryClick(cat.id)}
-              onMouseEnter={(e) => handleMouseEnter(e, cat.id)}
-              onMouseLeave={(e) => handleMouseLeave(e, cat.id)}
-            >
-              {/* Liquid Fill */}
-              <div
-                ref={(el) => (liquidRefs.current[cat.id] = el)}
-                className="absolute inset-0 bg-[#4A5568] rounded-md origin-bottom max-sm:rounded-sm max-md:rounded-sm max-lg:rounded-xs  max-xl:rounded-xs"
-                style={{ transform: "scaleY(0)" }}
-              />
-
-              {/* Content */}
-              <cat.icon
-                ref={(el) => (iconRefs.current[cat.id] = el)}
-                className="text-xl  z-10  max-sm:xs max-md:text-xs max-lg:text-sm max-xl:text-md  max-2xl:text-lg"
-              />
-              <span
-                ref={(el) => (textRefs.current[cat.id] = el)}
-                className="text-xs text-center uppercase tracking-tight font-futura-medium  z-10 max-sm:text-[7.5px] max-md:text-[10px] max-lg:text-[10.5px] max-xl:text-[12px] "
-              >
-                {cat.label}
-              </span>
-            </button>
-          ))}
-
-          {/* PATH BUTTONS */}
+          {/* PATH BUTTONS - Now outside the category container */}
           {selectedCategory && (
             <div
               ref={pathButtonsRef}
-              className="absolute bottom-full font-futura-medium tracking-tight p-2 mb-2 bg-white text-[#4A5568] flex flex-row rounded-md shadow-2xl gap-2 max-sm:p-1 max-sm:gap-0.5 max-sm:rounded-xs max-md:p-1 max-md:gap-0.5 max-md:rounded-xs max-lg:p-1 max-lg:gap-0.5 max-lg:rounded-xs max-xl:p-2 max-xl:gap-0.5 max-xl:rounded-xs"
-              style={{ 
+              className="backdrop-blur-sm absolute bottom-full font-futura-medium tracking-tight p-2 mb-2 text-white flex flex-row rounded-md shadow-2xl gap-2 max-sm:p-1 max-sm:gap-0.5 max-sm:rounded-xs max-md:p-1 max-md:gap-0.5 max-md:rounded-xs max-lg:p-1 max-lg:gap-0.5 max-lg:rounded-xs max-xl:p-2 max-xl:gap-0.5 max-xl:rounded-xs"
+              style={{
                 left: `${pathButtonsPosition.left}px`,
-                transform: 'translateX(-50%)'
+                transform: "translateX(-50%)",
+                backgroundColor: "rgba(0, 0, 0, 0.2)",
               }}
             >
-              {splitIntoColumns(pathData[selectedCategory]).map((column, colIndex) => (
-                <div key={colIndex} className="flex flex-col gap-2 max-sm:gap-0.5 max-md:gap-0.5 max-lg:gap-0.5 max-xl:gap-0.5">
-                  {column.map((item, i) => (
-                    <button
-                      className={`p-2 rounded-md flex justify-center text-nowrap ${item.name === selectedPath ? 'bg-[#4A5568] text-white': 'hover:bg-gray-200'}  gap-2 items-center transition-colors max-sm:p-0.5 max-sm:rounded-xs max-sm:text-[7px] max-sm:gap-0.5 max-md:p-0.5 max-md:rounded-xs max-md:text-[10px] max-md:gap-0.5 max-lg:p-1 max-lg:rounded-xs max-lg:text-[14px] max-lg:gap-0.5 max-xl:p-1 max-xl:rounded-xs max-xl:text-[14px] max-xl:gap-0.5  max-2xl:p-2 max-2xl:rounded-sm max-2xl:text-[20px] max-2xl:gap-0.5`}
-                      key={`${colIndex}-${i}`}
-                      onClick={() => handlePathClick(item.name)}
-                    >
-                      {item.name}
-                    </button>
-                  ))}
-                </div>
-              ))}
+              {splitIntoColumns(pathData[selectedCategory]).map(
+                (column, colIndex) => (
+                  <div
+                    key={colIndex}
+                    className="flex flex-col gap-2 max-sm:gap-0.5 max-md:gap-0.5 max-lg:gap-0.5 max-xl:gap-0.5"
+                  >
+                    {column.map((item, i) => (
+                      <button
+                        className={`p-2 rounded-md flex justify-center text-nowrap ${item.name === selectedPath ? "bg-[#4A5568] text-white" : "hover:bg-[#4A5568]"}  gap-2 items-center transition-colors max-sm:p-0.5 max-sm:rounded-xs max-sm:text-[7px] max-sm:gap-0.5 max-md:p-0.5 max-md:rounded-xs max-md:text-[10px] max-md:gap-0.5 max-lg:p-1 max-lg:rounded-xs max-lg:text-[14px] max-lg:gap-0.5 max-xl:p-1 max-xl:rounded-xs max-xl:text-[14px] max-xl:gap-0.5  max-2xl:p-2 max-2xl:rounded-sm max-2xl:text-[20px] max-2xl:gap-0.5`}
+                        key={`${colIndex}-${i}`}
+                        onClick={() => handlePathClick(item.name)}
+                      >
+                        {item.name}
+                      </button>
+                    ))}
+                  </div>
+                ),
+              )}
             </div>
           )}
+
+          {/* CATEGORY BUTTONS */}
+          <div
+            ref={categoryContainerRef}
+            className="flex gap-2 backdrop-blur-sm p-1 rounded-xs shadow-2xl text-white relative max-sm:gap-0.5 max-sm:p-0.5 max-md:gap-0.5 max-md:p-0.5 max-lg:gap-0.5 max-lg:p-1 max-xl:gap-0.5 max-xl:p-1"
+            style={{
+              backgroundColor: "rgba(0, 0, 0, 0.2)",
+            }}
+          >
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                ref={(el) => (buttonRefs.current[cat.id] = el)}
+                data-selected={selectedCategory === cat.id}
+                className="
+          p-2
+          flex flex-col items-center justify-center gap-1
+          rounded-md
+          relative
+          overflow-hidden
+          max-sm:p-1
+          max-sm:rounded-sm
+          max-sm:gap-0
+          max-sm:px-0.5
+          max-md:p-1
+          max-md:rounded-sm
+          max-md:gap-0
+          max-md:px-0.5
+          max-lg:p-1
+          max-lg:rounded-xs
+          max-lg:gap-0
+          max-lg:px-0.5
+        "
+                onClick={() => handleCategoryClick(cat.id)}
+                onMouseEnter={(e) => handleMouseEnter(e, cat.id)}
+                onMouseLeave={(e) => handleMouseLeave(e, cat.id)}
+              >
+                {/* Liquid Fill */}
+                <div
+                  ref={(el) => (liquidRefs.current[cat.id] = el)}
+                  className="absolute inset-0 bg-[#4A5568] rounded-md origin-bottom max-sm:rounded-sm max-md:rounded-sm max-lg:rounded-xs max-xl:rounded-xs"
+                  style={{ transform: "scaleY(0)" }}
+                />
+
+                {/* Content */}
+                <cat.icon
+                  ref={(el) => (iconRefs.current[cat.id] = el)}
+                  className="text-xl z-10 max-sm:xs max-md:text-xs max-lg:text-sm max-xl:text-md max-2xl:text-lg"
+                />
+                <span
+                  ref={(el) => (textRefs.current[cat.id] = el)}
+                  className="text-xs text-center uppercase tracking-tight font-futura-medium z-10 max-sm:text-[7.5px] max-md:text-[10px] max-lg:text-[10.5px] max-xl:text-[12px]"
+                >
+                  {cat.label}
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </>

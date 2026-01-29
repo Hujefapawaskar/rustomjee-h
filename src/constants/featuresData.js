@@ -238,7 +238,7 @@ export const type1SlidesData = [
     title: "AN ADDRESS THE SKYLINE\nWILL REMEMBER",
     accentSquares: ["#1a3a4a", "#2d4a5a"],
     seaBoxSrc: "/slides/seaBox.webp",
-    squaresPosition: "right",
+    squaresPosition: "left",
   },
 
   // ============================================
