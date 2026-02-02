@@ -2034,7 +2034,7 @@ export default function FloorComparisonPanel({
                   </span>
                 </div>
                 {/* Label */}
-                <div className="absolute bottom-1 sm:bottom-2 left-1/2 -translate-x-1/2 bg-[#C19A40] text-white px-1.5 py-0.5 sm:px-3 sm:py-1 rounded text-[8px] sm:text-xs whitespace-nowrap">
+                <div className="absolute bottom-1 sm:bottom-2 left-1/2 -translate-x-1/2 bg-[#C19A40] text-white px-1.5 py-0.5 sm:px-3 sm:py-1 rounded text-[8px] sm:text-xs whitespace-nowrap hidden lg:block">
                   Unit Plan - Floor {firstFloor.info.floorNumber}
                 </div>
               </div>
