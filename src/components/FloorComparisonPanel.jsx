@@ -419,7 +419,7 @@ function BalconyPointTabs({
   };
 
   return (
-    <div className="absolute sm:top-0 right-0 z-30 flex justify-end sm:left-0 sm:right-0 sm:justify-center lg:top-10 xl:top-0 font-futura-medium">
+    <div className="absolute sm:top-0 right-0 z-30 flex justify-end sm:left-0 sm:right-0 sm:justify-center lg:top-10 xl:top-0 font-futura-bk">
       <div className="flex bg-white/90 backdrop-blur-sm rounded-bl-lg sm:rounded-b-lg shadow-md overflow-hidden">
         {Array.from({ length: maxPoints }, (_, i) => i + 1).map(
           (point, index) => {
@@ -565,7 +565,7 @@ function BalconyViewCarousel({
   };
 
   return (
-    <div className="relative w-full h-full font-futura-medium">
+    <div className="relative w-full h-full font-futura-bk">
       {/* Balcony Point Tabs - aligned right on mobile */}
       <BalconyPointTabs
         currentPoint={currentPoint}
@@ -708,7 +708,7 @@ function PlanTypeToggle({ isUnitPlan, onToggle, borderColor = "#C19A40" }) {
   };
 
   return (
-    <div className="flex items-center gap-1 sm:gap-2 font-futura-medium">
+    <div className="flex items-center gap-1 sm:gap-2 font-futura-bk">
       <span
         className={`text-[9px] sm:text-xs  transition-colors uppercase ${
           !isUnitPlan ? "text-gray-800" : "text-gray-400"
@@ -1394,7 +1394,7 @@ export default function FloorComparisonPanel({
   return createPortal(
     <div
       ref={overlayRef}
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 font-futura-medium"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 font-futura-bk"
     >
       <div
         ref={panelRef}
@@ -1425,7 +1425,7 @@ export default function FloorComparisonPanel({
         {/* Left Panel - Floor Plan Comparison */}
         <div
           ref={leftPanelRef}
-          className="bg-white uppercase font-futura-medium overflow-y-auto left-panel"
+          className="bg-white uppercase font-futura-bk overflow-y-auto left-panel"
           style={{ width: "66.666%" }}
         >
           <div

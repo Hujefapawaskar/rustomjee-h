@@ -306,11 +306,21 @@ export const type1SlidesData = [
     squaresPosition: "left",
   },
 
+
+   // ============================================
+  // SLIDE 8 - Materials (Full Width Image)
+  // ============================================
+  {
+    id: 10,
+    slideType: "fullImage",
+    imageSrc: "/slides/10.png",
+  },
+
   // ============================================
   // SLIDE 10 - Rustomjee Portfolio (3 Buildings + Text)
   // ============================================
   {
-    id: 10,
+    id: 11,
     slideType: "portfolioSlide",
     backgroundSrc: "/slides/bg.webp",
     buildings: [

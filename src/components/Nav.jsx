@@ -2,6 +2,7 @@ import { forwardRef, useState } from 'react';
 import { IoHomeOutline } from "react-icons/io5";
 import { MdOutline360, MdOutlineInventory } from "react-icons/md";
 import { GrGallery } from "react-icons/gr";
+import { HiOutlineVideoCamera } from "react-icons/hi2";
 import { FloorPlanIcon } from "./Icons";
 import { LuMapPin } from "react-icons/lu";
 import { useNavigate } from 'react-router-dom';
@@ -21,7 +22,8 @@ const NavigationBar = forwardRef(({
     gallery: true,
     floorPlan: true,
     amenities: true,
-    location: true
+    location: true,
+    video: true
   }
 }, ref) => {
   const navigate = useNavigate();
@@ -47,7 +49,9 @@ const NavigationBar = forwardRef(({
     },
     { key: 'gallery', Icon: GrGallery, label: 'Gallery', route: '/gallery', show: showIcons.gallery },
     { key: 'floorPlan', Icon: FloorPlanIcon, label: 'Floor Plan', route: '/floorplan', show: showIcons.floorPlan, isCustom: true },
-    { key: 'map', Icon: LuMapPin, label: 'Map', route: '/map', show: showIcons.location }
+    { key: 'video', Icon: HiOutlineVideoCamera, label: 'Video', route: '/videoplayer', show: showIcons.video },
+    { key: 'map', Icon: LuMapPin, label: 'Map', route: '/map', show: showIcons.location },
+    
   ];
 
   return (
@@ -78,7 +82,7 @@ const NavigationBar = forwardRef(({
             />
             
             <span
-              className={`absolute -bottom-3  whitespace-nowrap pb-1 text-sm font-futura-medium tracking-wider transition-all duration-200 ${
+              className={`absolute -bottom-5 whitespace-nowrap pb-2 text-sm font-futura-bk tracking-wider transition-all duration-200 ${
                 hoveredIcon === key
                   ? 'opacity-100 translate-y-0'
                   : 'opacity-0 -translate-y-1 pointer-events-none'

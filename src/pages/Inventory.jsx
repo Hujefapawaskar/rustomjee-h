@@ -105,7 +105,7 @@ export default function Inventory() {
     <>
     <OrientationLock />
     <Loader>
-    <div className="fixed inset-0 w-full h-full overflow-hidden bg-[#dedbd4] font-futura-medium">
+    <div className="fixed inset-0 w-full h-full overflow-hidden bg-[#dedbd4] font-futura-bk">
       {/* Logo */}
       <div className="fixed top-4 right-10 z-40">
         <img 
@@ -169,7 +169,7 @@ export default function Inventory() {
                 y={1500}
                 textAnchor="start"
                 dominantBaseline="middle"
-                className="floor-number-glow font-futura-medium "
+                className="floor-number-glow font-futura-bk "
                 style={{
                   fontSize: '700px',
                   fontWeight: 'bold',

@@ -207,7 +207,7 @@ const Views = () => {
   };
 
   return (
-    <div className="w-full h-screen relative bg-[#1a1a1a] font-futura-medium tracking-widest">
+    <div className="w-full h-screen relative bg-[#1a1a1a] font-futura-bk tracking-widest">
       {/* Close Button - Top Right */}
       <button
         onClick={handleClose}

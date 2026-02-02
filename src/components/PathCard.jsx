@@ -144,7 +144,7 @@ useEffect(() => {
         internalCardRef.current = el;
         if (cardRef) cardRef.current = el;
       }}
-      className="absolute left-0 top-0 w-75 h-full flex flex-col justify-between bg-white rounded-md shadow-2xl overflow-hidden z-9999 max-sm:w-27 max-sm:rounded-sm max-sm:justify-normal max-sm:gap-0 max-md:w-27 max-md:rounded-sm max-md:justify-normal max-md:gap-0 max-lg:w-48 max-lg:rounded-sm max-lg:justify-normal max-lg:gap-0 max-xl:w-55 max-xl:rounded-sm max-xl:justify-normal max-xl:gap-0 max-3xl:w-80 max-4xl:w-100 max-4xl:justify-stretch"
+      className="absolute left-0 top-0 w-75 h-full flex flex-col justify-between bg-white rounded-md shadow-2xl overflow-scroll z-9999 max-sm:w-27 max-sm:rounded-sm max-sm:justify-normal max-sm:gap-0 max-md:w-27 max-md:rounded-sm max-md:justify-normal max-md:gap-0 max-lg:w-48 max-lg:rounded-sm max-lg:justify-normal max-lg:gap-0 max-xl:w-55 max-xl:rounded-sm max-xl:justify-normal max-xl:gap-0 max-3xl:w-80 max-4xl:w-100 max-4xl:justify-stretch"
     >
       {/* Close Button */}
       <button
@@ -174,10 +174,10 @@ useEffect(() => {
         {/* Heading */}
         <div className="">
 
-        <h2 className="text-2xl   text-gray-800 font-futura-medium  mb-3 max-sm:text-[12px] max-sm:mb-0 max-md:text-[12px] max-md:mb-1 max-lg:text-[22px] max-lg:mb-1 max-xl:text-md max-xl:mb-2 max-3xl:text-3xl max-4xl:text-4xl">{currentPath.name}</h2>
+        <h2 className="text-2xl   text-gray-800 font-futura-bk  mb-3 max-sm:text-[12px] max-sm:mb-0 max-md:text-[12px] max-md:mb-1 max-lg:text-[22px] max-lg:mb-1 max-xl:text-md max-xl:mb-2 max-3xl:text-3xl max-4xl:text-4xl">{currentPath.name}</h2>
 
         {/* Description */}
-        <p className="text-gray-600  text-sm  font-futura-medium  max-sm:text-[10px] max-md:text-[10px]  max-lg:text-xs max-xl:text-sm max-3xl:text-lg max-4xl:text-2xl">
+        <p className="text-gray-600  text-sm  font-futura-bk  max-sm:text-[10px] max-md:text-[10px]  max-lg:text-xs max-xl:text-sm max-3xl:text-lg max-4xl:text-2xl">
           {currentPath.description || "Explore this amazing location and discover what it has to offer."}
         </p>
         </div>
@@ -186,19 +186,19 @@ useEffect(() => {
         <div className="bg-[#4A5568] tracking-tight text-white bg-opacity-10 rounded-lg p-4 max-sm:p-1 max-sm:rounded-sm max-md:p-1 max-md:rounded-sm max-lg:p-2 max-lg:rounded-sm max-xl:p-2 max-xl:rounded-sm">
           <div className="flex justify-between items-center">
             <div>
-              <p className="text-xs font-futura-medium  max-sm:text-[10px] max-md:text-[8px] max-lg:text-[13px] max-xl:text-md max-3xl:text-xl max-4xl:text-2xl">Distance</p>
-              <p className="text-2xl    font-futura-medium  max-sm:text-[10px] max-md:text-[8px] max-lg:text-[14px]  max-xl:text-sm">{getDistance()}</p>
+              <p className="text-xs font-futura-bk  max-sm:text-[10px] max-md:text-[8px] max-lg:text-[13px] max-xl:text-md max-3xl:text-xl max-4xl:text-2xl">Distance</p>
+              <p className="text-2xl    font-futura-bk  max-sm:text-[10px] max-md:text-[8px] max-lg:text-[14px]  max-xl:text-sm">{getDistance()}</p>
             </div>
             <div>
-              <p className="text-xs font-futura-medium  max-sm:text-[10px]  max-md:text-[8px] max-lg:text-[13px] max-xl:text-md  max-3xl:text-xl max-4xl:text-2xl">Est. Time</p>
-              <p className="text-2xl    font-futura-medium  max-sm:text-[10px] max-md:text-[8px] max-lg:text-[14px] max-xl:text-sm ">{getTime()}</p>
+              <p className="text-xs font-futura-bk  max-sm:text-[10px]  max-md:text-[8px] max-lg:text-[13px] max-xl:text-md  max-3xl:text-xl max-4xl:text-2xl">Est. Time</p>
+              <p className="text-2xl    font-futura-bk  max-sm:text-[10px] max-md:text-[8px] max-lg:text-[14px] max-xl:text-sm ">{getTime()}</p>
             </div>
           </div>
         </div>
 
         {/* Transport Buttons */}
         <div className=" flex flex-col tracking-tight gap-5 max-sm:gap-1 max-sm:justify-between max-md:gap-0.5 max-md:justify-between max-lg:gap-2 max-lg:justify-between max-xl:gap-1 max-xl:justify-between">
-          <p className="text-sm text-gray-500 font-futura-medium  max-sm:text-[10px] max-md:text-[10px] max-lg:text-xs max-3xl:text-lg max-4xl:text-xl">Choose transport mode:</p>
+          <p className="text-sm text-gray-500 font-futura-bk  max-sm:text-[10px] max-md:text-[10px] max-lg:text-xs max-3xl:text-lg max-4xl:text-xl">Choose transport mode:</p>
           <div className="grid grid-cols-4 gap-1 max-sm:gap-0.5 max-sm:grid-cols-2 max-md:gap-0.5 max-md:grid-cols-2 max-lg:gap-0.5 max-lg:grid-cols-2 max-xl:gap-0.5 max-xl:grid-cols-2">
             {transportModes.map((mode) => (
               <button

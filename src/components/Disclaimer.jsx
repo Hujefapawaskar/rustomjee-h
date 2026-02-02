@@ -18,21 +18,21 @@ const Disclaimer = ({ onStart }) => {
   return (
     <div
       ref={containerRef}
-      className="absolute inset-0 z-[100] bg-black/90 flex flex-col items-center justify-center text-white p-6 font-futura-medium"
+      className="absolute inset-0 z-[100] bg-black/90 flex flex-col items-center justify-center text-white p-6 font-futura-bk"
     >
-      <h1 className="text-4xl font-semibold mb-4 text-center">
+      <h1 className="text-4xl mb-4 text-center">
         Disclaimer
       </h1>
 
-      <p className="max-w-xl text-center text-xl mb-8 leading-relaxed">
-        This work is for <strong>presentation purposes only</strong> and does not
-        represent the <strong>actual location</strong>. All models and visuals
+      <p className="max-w-xl text-center text-xl mb-8 leading-relaxed ">
+        This work is for presentation purposes only and does not
+        represent the actual location. All models and visuals
         are conceptual and not exact representations of real-world locations.
       </p>
 
       <button
         onClick={handleStart}
-        className="px-8 py-3 bg-white text-black rounded-lg font-semibold text-lg hover:bg-gray-200 transition"
+        className="px-8 py-3 bg-white text-black rounded-lg text-lg hover:bg-gray-200 transition"
       >
         Start
       </button>

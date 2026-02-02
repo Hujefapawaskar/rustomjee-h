@@ -640,7 +640,21 @@ const MapSlide = ({ data }) => {
 };
 
 // ============================================
-// SLIDE TYPE: portfolioSlide (Slide 10)
+// SLIDE TYPE: fullImage (Slide 10)
+// ============================================
+const FullImageSlide2 = ({ data }) => {
+  return (
+    <div className="w-full h-full relative">
+      <img
+        src={data.imageSrc}
+        className="object-cover w-full h-full text-element"
+        alt=""
+      />
+    </div>
+  );
+};
+// ============================================
+// SLIDE TYPE: portfolioSlide (Slide 11)
 // ============================================
 const PortfolioSlide = ({ data }) => {
   return (

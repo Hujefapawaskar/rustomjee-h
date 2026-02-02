@@ -10,6 +10,7 @@ import MusicController from "./components/MusicController";
 import HomeNav from "./pages/HomeNav";
 import BackButtonHandler from "./components/BackButtonHandler ";
 import Views from "./components/Views";
+import VideoPlayer from "./pages/VideoPlayer";
 
 // Global logo component
 const GlobalLogo = () => (
@@ -32,13 +33,14 @@ const App = () => {
           <Route path="/" element={<Home />} />
 
           {/* Main home with navbar - after close button */}
-        <Route path="/home" element={<HomeNav />} />
+          <Route path="/home" element={<HomeNav />} />
 
           <Route path="/floorplan" element={<Inventory />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/features" element={<Features />} />
           <Route path="/map" element={<Map />} />
           <Route path="/views" element={<Views />} />
+          <Route path="/videoplayer" element={<VideoPlayer />} />
         </Routes>
       </BrowserRouter>
     </OrientationLock>

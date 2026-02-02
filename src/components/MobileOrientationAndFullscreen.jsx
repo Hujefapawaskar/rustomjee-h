@@ -196,7 +196,7 @@ const OrientationLock = ({ children, onReady }) => {
 
       {/* Fullscreen Guard Overlay */}
       {showOverlay && (
-        <div style={overlayStyles} onClick={requestFullscreen}>
+        <div style={overlayStyles} onClick={requestFullscreen} className="font-futura-bk">
           {/* Mobile/Tablet: Rotate message */}
           {(deviceType === "mobile" || deviceType === "tablet") && !isLandscape && (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "16px" }}>
@@ -209,7 +209,7 @@ const OrientationLock = ({ children, onReady }) => {
                   transform: "rotate(90deg)",
                 }}
               />
-              <p style={{ fontSize: "20px", fontWeight: "600" }}>
+              <p style={{ fontSize: "20px" }}>
                 Rotate your device to <span style={{ color: "#60a5fa" }}>landscape</span>
               </p>
             </div>
@@ -226,7 +226,7 @@ const OrientationLock = ({ children, onReady }) => {
                   style={{ height: "56px", opacity: 0.8, marginBottom: "16px" }}
                 />
 
-                <p style={{ fontSize: "24px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                <p style={{ fontSize: "24px", textTransform: "uppercase", letterSpacing: "0.1em" }}>
                   Click anywhere to enter
                 </p>
                 <p style={{ color: "rgba(255,255,255,0.6)", fontSize: "18px" }}>
