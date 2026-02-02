@@ -117,7 +117,7 @@ export const type1SlidesData = [
       {
         src: "/slides/kunal.webp",
         name: "KUNAL MANIAR",
-        title: "LANDSCAPE DESIGN PARTNER",
+        title: "PRINCIPAL LANDSCAPE DESIGNER",
         description: "Known within discerning circles for his refined landscape vision, Kunal Maniar brings nature and architecture into quiet dialogue. His work animates even the most compact and vertical spaces, transforming terraces, decks, and gardens into composed sanctuaries of balance, beauty, and calm.",
       },
     ],
@@ -204,7 +204,7 @@ export const type1SlidesData = [
     backgroundSrc: "/slides/bg.webp",
     imageSrc: "/slides/kunal-bio.webp",
     name: "KUNAL MANIAR",
-    title: "LANDSCAPE DESIGN PARTNER",
+    title: "PRINCIPAL LANDSCAPE DESIGNER",
     paragraphs: [
       {
         lines: [
