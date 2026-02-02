@@ -9,13 +9,17 @@ const MusicController = ({ play }) => {
 
   const [muted, setMuted] = useState(false);
 
-  // Play audio after disclaimer
+  // Play/pause audio based on play prop
   useEffect(() => {
-    if (play && audioRef.current) {
+    if (!audioRef.current) return;
+
+    if (play) {
       audioRef.current.volume = 0.6;
       audioRef.current.play().catch(() => {
         console.log("User gesture required to play audio");
       });
+    } else {
+      audioRef.current.pause();
     }
   }, [play]);
 
@@ -55,7 +59,7 @@ const MusicController = ({ play }) => {
   
       // Smoothly move all bars back to uniform height (rest state)
       gsap.to(bars.current, {
-        height: "10px",     // your rest height
+        height: "10px",
         duration: 0.4,
         ease: "power2.out",
         stagger: 0.05,

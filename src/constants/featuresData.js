@@ -312,7 +312,7 @@ export const type1SlidesData = [
   // ============================================
   {
     id: 10,
-    slideType: "fullImage",
+    slideType: "fullImageContain",
     imageSrc: "/slides/10.png",
   },
 

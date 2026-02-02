@@ -644,10 +644,10 @@ const MapSlide = ({ data }) => {
 // ============================================
 const FullImageSlide2 = ({ data }) => {
   return (
-    <div className="w-full h-full relative">
+    <div className="w-full h-full flex items-center justify-center">
       <img
         src={data.imageSrc}
-        className="object-cover w-full h-full text-element"
+        className="w-full h-full object-cover text-element"
         alt=""
       />
     </div>
@@ -749,6 +749,8 @@ const Slide = ({ data }) => {
       return <FullImageSlide data={data} />;
     case "mapSlide":
       return <MapSlide data={data} />;
+      case "fullImageContain":
+      return <FullImageSlide2 data={data} />;
     case "portfolioSlide":
       return <PortfolioSlide data={data} />;
     default:
