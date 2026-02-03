@@ -6,11 +6,16 @@
   font-family: Futura-bk-bt;
   src: url("/fonts/Futura-Bk.ttf");
 }
+@font-face {
+  font-family: Futura-lt;
+  src: url("/fonts/Futura-Lt.ttf");
+}
 
 @theme{
   --font-balgin: "Balgin", sans-serif;
   --font-futura-medium: Futura-Medium, "sans-serif";
   --font-futura-bk: Futura-bk-bt, "sans-serif";
+  --font-futura-lt: Futura-lt, "sans-serif";
 
   --breakpoint-3xl: 160rem;
   --breakpoint-4xl: 240rem;

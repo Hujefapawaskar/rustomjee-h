@@ -1,5 +1,5 @@
 // Features.jsx
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import gsap from "gsap";
 import { CustomEase } from "gsap/CustomEase";
@@ -27,6 +27,117 @@ CustomEase.create(
 // 3xl: 2560px  - 2K monitors
 // 4xl: 3840px  - 4K monitors
 // ============================================
+
+// ============================================
+// CUSTOM HOOK: useImageTopAlignment
+// Calculates and returns the top position of an image/container
+// ============================================
+const useImageTopAlignment = (imageRef, containerRef, options = {}) => {
+  const { 
+    defaultTopPercent = 15, // Default position as percentage
+    minTopPx = 16, // Minimum distance from top in pixels
+    enabled = true 
+  } = options;
+  
+  const [topPosition, setTopPosition] = useState(`${defaultTopPercent}%`);
+
+  const calculatePosition = useCallback(() => {
+    if (!enabled || !imageRef?.current || !containerRef?.current) {
+      return;
+    }
+
+    const imageRect = imageRef.current.getBoundingClientRect();
+    const containerRect = containerRef.current.getBoundingClientRect();
+    
+    // Calculate the top of the image relative to the container
+    let topOffset = imageRect.top - containerRect.top;
+    
+    // Ensure minimum distance from top
+    topOffset = Math.max(topOffset, minTopPx);
+    
+    setTopPosition(`${topOffset}px`);
+  }, [enabled, minTopPx]);
+
+  useEffect(() => {
+    if (!enabled) return;
+
+    // Initial calculation after a short delay to ensure images are rendered
+    const initialTimeout = setTimeout(calculatePosition, 100);
+    
+    // Recalculate on resize
+    const handleResize = () => {
+      calculatePosition();
+    };
+
+    window.addEventListener('resize', handleResize);
+    
+    // Also recalculate when images load
+    const img = imageRef?.current;
+    if (img && img.tagName === 'IMG') {
+      img.addEventListener('load', calculatePosition);
+    }
+
+    return () => {
+      clearTimeout(initialTimeout);
+      window.removeEventListener('resize', handleResize);
+      if (img && img.tagName === 'IMG') {
+        img.removeEventListener('load', calculatePosition);
+      }
+    };
+  }, [calculatePosition, enabled]);
+
+  return topPosition;
+};
+
+// ============================================
+// CUSTOM HOOK: useContainerTopAlignment
+// For aligning with a container/div top (like portfolio slide)
+// ============================================
+const useContainerTopAlignment = (targetRef, containerRef, options = {}) => {
+  const { 
+    defaultTopPercent = 15,
+    minTopPx = 16,
+    enabled = true 
+  } = options;
+  
+  const [topPosition, setTopPosition] = useState(`${defaultTopPercent}%`);
+
+  const calculatePosition = useCallback(() => {
+    if (!enabled || !targetRef?.current || !containerRef?.current) {
+      return;
+    }
+
+    const targetRect = targetRef.current.getBoundingClientRect();
+    const containerRect = containerRef.current.getBoundingClientRect();
+    
+    // Calculate the top of the target element relative to the container
+    let topOffset = targetRect.top - containerRect.top;
+    
+    // Ensure minimum distance from top
+    topOffset = Math.max(topOffset, minTopPx);
+    
+    setTopPosition(`${topOffset}px`);
+  }, [enabled, minTopPx]);
+
+  useEffect(() => {
+    if (!enabled) return;
+
+    const initialTimeout = setTimeout(calculatePosition, 50);
+    
+    const handleResize = () => {
+      calculatePosition();
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      clearTimeout(initialTimeout);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [calculatePosition, enabled]);
+
+  return topPosition;
+};
 
 // ============================================
 // CLOSE BUTTON COMPONENT
@@ -149,8 +260,16 @@ const renderParagraphs = (
 // SLIDE TYPE: splitBackground (Slide 1)
 // ============================================
 const SplitBackgroundSlide = ({ data }) => {
+  const containerRef = useRef(null);
+  const imageContainerRef = useRef(null);
+  
+  const paragraphTop = useContainerTopAlignment(imageContainerRef, containerRef, {
+    defaultTopPercent: 25,
+    minTopPx: 16,
+  });
+
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full" ref={containerRef}>
       {/* Single Background covering entire slide */}
       <img
         src={data.rightSection.backgroundSrc}
@@ -163,7 +282,10 @@ const SplitBackgroundSlide = ({ data }) => {
         {/* Left Section - Image (vertically centered) */}
         <div className="w-[38%] sm:w-[38%] md:w-[40%] lg:w-[42%] xl:w-[40%] 2xl:w-[35%] 3xl:w-[35%] 4xl:w-[35%] relative h-full flex items-center justify-start">
           {/* Person Image with hover effect */}
-          <div className="h-[50%] sm:h-[52%] md:h-[55%] lg:h-[55%] xl:h-[52%] 2xl:h-[50%] 3xl:h-[50%] 4xl:h-[50%] w-full overflow-hidden group">
+          <div 
+            ref={imageContainerRef}
+            className="h-[50%] sm:h-[52%] md:h-[55%] lg:h-[55%] xl:h-[52%] 2xl:h-[50%] 3xl:h-[50%] 4xl:h-[50%] w-full overflow-hidden group"
+          >
             <img
               src={data.leftSection.imageSrc}
               className="w-full h-full object-cover object-[50%_30%] text-element transition-all duration-700 ease-out group-hover:scale-105"
@@ -177,9 +299,12 @@ const SplitBackgroundSlide = ({ data }) => {
         {/* Right Section - Text Content */}
         <div className="w-[62%] sm:w-[62%] md:w-[60%] lg:w-[58%] xl:w-[60%] 2xl:w-[60%] 3xl:w-[60%] 4xl:w-[60%] absolute h-full right-0">
           {/* Content Container - Right aligned text */}
-          <div className="h-full px-3 py-4 sm:px-4 sm:py-5 md:px-5 md:py-6 lg:px-6 lg:py-8 xl:px-8 xl:py-10 2xl:px-14 2xl:py-16 3xl:px-20 3xl:py-20 4xl:px-28 4xl:py-28 flex flex-col justify-between">
-            {/* Middle Section - Paragraphs with exact line breaks */}
-            <div className="relative flex-1 flex flex-col justify-center py-2 sm:py-2 md:py-3 lg:py-4 xl:py-5 -top-[10%] sm:-top-[12%] md:-top-[14%] lg:-top-[16%] xl:-top-[15%] 2xl:-top-25 3xl:-top-32 4xl:-top-44">
+          <div className="h-full px-3 py-4 sm:px-4 sm:py-5 md:px-5 md:py-6 lg:px-6 lg:py-8 xl:px-8 xl:py-10 2xl:px-14 2xl:py-16 3xl:px-20 3xl:py-20 4xl:px-28 4xl:py-28 flex flex-col justify-between relative">
+            {/* Middle Section - Paragraphs aligned with image top */}
+            <div 
+              className="absolute right-3 sm:right-4 md:right-5 lg:right-6 xl:right-8 2xl:right-14 3xl:right-20 4xl:right-28"
+              style={{ top: paragraphTop }}
+            >
               <div className="text-right space-y-2 sm:space-y-2.5 md:space-y-3 lg:space-y-4 xl:space-y-5 2xl:space-y-7 3xl:space-y-9 4xl:space-y-12">
                 {renderParagraphs(
                   data.rightSection.paragraphs,
@@ -188,6 +313,9 @@ const SplitBackgroundSlide = ({ data }) => {
                 )}
               </div>
             </div>
+
+            {/* Spacer */}
+            <div className="flex-1"></div>
 
             {/* Bottom Section - Signature Area */}
             <div className="text-right">
@@ -227,11 +355,19 @@ const SplitBackgroundSlide = ({ data }) => {
 
 // ============================================
 // SLIDE TYPE: threeArchitects (Slide 2)
-// IMPROVED: Increased text sizes for better readability on iPad
+// UPDATED: Heading aligned with image container top
 // ============================================
 const ThreeArchitectsSlide = ({ data }) => {
+  const containerRef = useRef(null);
+  const imageContainerRef = useRef(null);
+  
+  const headingTop = useContainerTopAlignment(imageContainerRef, containerRef, {
+    defaultTopPercent: 12,
+    minTopPx: 16,
+  });
+
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full" ref={containerRef}>
       {/* Background */}
       <img
         src={data.backgroundSrc}
@@ -239,12 +375,15 @@ const ThreeArchitectsSlide = ({ data }) => {
         alt=""
       />
 
-      <div className="absolute inset-0 flex justify-between ">
+      <div className="absolute inset-0 flex justify-between">
         {/* Left Section - Title and Accent Squares */}
-        <div className="w-[25%] sm:w-[26%] md:w-[28%] lg:w-[30%] xl:w-[32%] 2xl:w-[35%] 3xl:w-[35%] 4xl:w-[35%] px-3 py-4 sm:px-4 sm:py-5 md:px-5 md:py-6 lg:px-6 lg:py-8 xl:px-8 xl:py-10 2xl:px-14 2xl:py-16 3xl:px-20 3xl:py-20 4xl:px-28 4xl:py-28 flex flex-col justify-between h-full ">
-          {/* Title at top */}
+        <div className="w-[25%] sm:w-[26%] md:w-[28%] lg:w-[30%] xl:w-[32%] 2xl:w-[35%] 3xl:w-[35%] 4xl:w-[35%] px-3 py-4 sm:px-4 sm:py-5 md:px-5 md:py-6 lg:px-6 lg:py-8 xl:px-8 xl:py-10 2xl:px-14 2xl:py-16 3xl:px-20 3xl:py-20 4xl:px-28 4xl:py-28 flex flex-col justify-between h-full relative">
+          {/* Title - dynamically positioned */}
           <div>
-            <h2 className="text-black text-[10px] sm:text-xs md:text-sm lg:text-base xl:text-xl 2xl:text-3xl 3xl:text-4xl 4xl:text-5xl font-futura-bk uppercase tracking-wide whitespace-pre-line leading-tight text-element">
+            <h2 
+              className="absolute text-black text-[10px] sm:text-xs md:text-sm lg:text-base xl:text-xl 2xl:text-3xl 3xl:text-4xl 4xl:text-5xl font-futura-bk uppercase tracking-wide whitespace-pre-line leading-tight text-element"
+              style={{ top: headingTop }}
+            >
               {data.title}
             </h2>
           </div>
@@ -259,7 +398,10 @@ const ThreeArchitectsSlide = ({ data }) => {
 
         {/* Right Section - 3 Architect Cards */}
         <div className="w-[75%] sm:w-[74%] md:w-[72%] lg:w-[70%] xl:w-[68%] 2xl:w-[50%] 3xl:w-[50%] 4xl:w-[50%] flex items-center justify-between py-3 sm:py-4 md:py-5 lg:py-6 xl:py-8 2xl:py-12 3xl:py-16 4xl:py-20 pr-3 sm:pr-4 md:pr-5 lg:pr-6 xl:pr-8 2xl:pr-14 3xl:pr-20 4xl:pr-28">
-          <div className="flex gap-2 sm:gap-2.5 md:gap-3 lg:gap-4 xl:gap-5 2xl:gap-6 3xl:gap-8 4xl:gap-10 w-full items-start">
+          <div 
+            ref={imageContainerRef}
+            className="flex gap-2 sm:gap-2.5 md:gap-3 lg:gap-4 xl:gap-5 2xl:gap-6 3xl:gap-8 4xl:gap-10 w-full items-start"
+          >
             {data.architects.map((architect, index) => (
               <div
                 key={index}
@@ -303,10 +445,17 @@ const ThreeArchitectsSlide = ({ data }) => {
 
 // ============================================
 // SLIDE TYPE: architectIndividual (Slides 3, 4, 5)
-// UPDATED: Text layout matching exact images
+// UPDATED: Heading aligned with image top
 // ============================================
 const ArchitectIndividualSlide = ({ data }) => {
   const isImageLeft = data.layoutDirection === "imageLeft";
+  const containerRef = useRef(null);
+  const imageRef = useRef(null);
+  
+  const headingTop = useImageTopAlignment(imageRef, containerRef, {
+    defaultTopPercent: 18,
+    minTopPx: 16,
+  });
 
   // Render paragraphs as continuous text block with line breaks
   const renderArchitectParagraphs = (paragraphs, alignment) => {
@@ -334,7 +483,7 @@ const ArchitectIndividualSlide = ({ data }) => {
   };
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full" ref={containerRef}>
       {/* Background */}
       <img
         src={data.backgroundSrc}
@@ -348,6 +497,7 @@ const ArchitectIndividualSlide = ({ data }) => {
             {/* Left - Image */}
             <div className="w-[42%] sm:w-[44%] md:w-[46%] lg:w-[48%] xl:w-[50%] 2xl:w-[55%] 3xl:w-[55%] 4xl:w-[55%] relative h-full overflow-hidden group cursor-pointer flex items-center">
               <img
+                ref={imageRef}
                 src={data.imageSrc}
                 className="w-full h-auto object-cover text-element transition-all duration-700 ease-out group-hover:scale-105"
                 alt=""
@@ -357,8 +507,11 @@ const ArchitectIndividualSlide = ({ data }) => {
             </div>
             {/* Right - Text */}
             <div className="w-[58%] sm:w-[56%] md:w-[54%] lg:w-[52%] xl:w-[50%] 2xl:w-[45%] 3xl:w-[45%] 4xl:w-[45%] px-3 py-4 sm:px-4 sm:py-5 md:px-5 md:py-6 lg:px-6 lg:py-8 xl:px-8 xl:py-10 2xl:px-10 2xl:py-16 3xl:px-14 3xl:py-20 4xl:px-20 4xl:py-28 h-full relative flex flex-col">
-              {/* Top - Name and Title */}
-              <div className="text-right pt-[8%] sm:pt-[10%] md:pt-[12%] lg:pt-[14%] xl:pt-[16%] 2xl:pt-[18%] 3xl:pt-[18%] 4xl:pt-[18%]">
+              {/* Top - Name and Title - dynamically positioned */}
+              <div 
+                className="text-right absolute right-3 sm:right-4 md:right-5 lg:right-6 xl:right-8 2xl:right-10 3xl:right-14 4xl:right-20"
+                style={{ top: headingTop }}
+              >
                 <h2 className="text-black text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-3xl 3xl:text-3xl 4xl:text-4xl font-futura-bk uppercase tracking-[0.2em] sm:tracking-[0.25em] md:tracking-widest text-element">
                   {data.name}
                 </h2>
@@ -389,8 +542,11 @@ const ArchitectIndividualSlide = ({ data }) => {
           <>
             {/* Left - Text */}
             <div className="w-[58%] sm:w-[56%] md:w-[54%] lg:w-[52%] xl:w-[50%] 2xl:w-[45%] 3xl:w-[45%] 4xl:w-[45%] px-3 py-4 sm:px-4 sm:py-5 md:px-5 md:py-6 lg:px-6 lg:py-8 xl:px-8 xl:py-10 2xl:px-10 2xl:py-16 3xl:px-14 3xl:py-20 4xl:px-20 4xl:py-28 h-full relative flex flex-col">
-              {/* Top - Name and Title */}
-              <div className="text-left pt-[8%] sm:pt-[10%] md:pt-[12%] lg:pt-[14%] xl:pt-[16%] 2xl:pt-[18%] 3xl:pt-[18%] 4xl:pt-[18%]">
+              {/* Top - Name and Title - dynamically positioned */}
+              <div 
+                className="text-left absolute left-3 sm:left-4 md:left-5 lg:left-6 xl:left-8 2xl:left-10 3xl:left-14 4xl:left-20"
+                style={{ top: headingTop }}
+              >
                 <h2 className="text-black text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-3xl 3xl:text-3xl 4xl:text-4xl font-futura-bk uppercase tracking-[0.2em] sm:tracking-[0.25em] md:tracking-widest text-element">
                   {data.name}
                 </h2>
@@ -419,6 +575,7 @@ const ArchitectIndividualSlide = ({ data }) => {
             {/* Right - Image */}
             <div className="w-[42%] sm:w-[44%] md:w-[46%] lg:w-[48%] xl:w-[50%] 2xl:w-[55%] 3xl:w-[55%] 4xl:w-[55%] relative h-full overflow-hidden group cursor-pointer flex items-center">
               <img
+                ref={imageRef}
                 src={data.imageSrc}
                 className="w-full h-auto object-cover object-[20%_0%] text-element transition-all duration-700 ease-out group-hover:scale-105"
                 alt=""
@@ -435,10 +592,19 @@ const ArchitectIndividualSlide = ({ data }) => {
 
 // ============================================
 // SLIDE TYPE: buildingShowcase (Slide 6)
+// UPDATED: Heading aligned with image top
 // ============================================
 const BuildingShowcaseSlide = ({ data }) => {
+  const containerRef = useRef(null);
+  const imageRef = useRef(null);
+  
+  const headingTop = useImageTopAlignment(imageRef, containerRef, {
+    defaultTopPercent: 15,
+    minTopPx: 16,
+  });
+
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full" ref={containerRef}>
       {/* Background for entire slide */}
       <img
         src={data.backgroundSrc}
@@ -448,10 +614,13 @@ const BuildingShowcaseSlide = ({ data }) => {
 
       <div className="absolute inset-0 flex">
         {/* Left - Title and Squares */}
-        <div className="w-[40%] sm:w-[40%] md:w-[38%] lg:w-[37%] xl:w-[36%] 2xl:w-[35%] 3xl:w-[35%] 4xl:w-[35%] px-3 py-4 sm:px-4 sm:py-5 md:px-5 md:py-6 lg:px-6 lg:py-8 xl:px-8 xl:py-10 2xl:px-14 2xl:py-16 3xl:px-20 3xl:py-20 4xl:px-28 4xl:py-28 flex flex-col justify-between h-full">
-          {/* Title at top */}
+        <div className="w-[40%] sm:w-[40%] md:w-[38%] lg:w-[37%] xl:w-[36%] 2xl:w-[35%] 3xl:w-[35%] 4xl:w-[35%] px-3 py-4 sm:px-4 sm:py-5 md:px-5 md:py-6 lg:px-6 lg:py-8 xl:px-8 xl:py-10 2xl:px-14 2xl:py-16 3xl:px-20 3xl:py-20 4xl:px-28 4xl:py-28 flex flex-col justify-between h-full relative">
+          {/* Title - dynamically positioned */}
           <div className="text-left">
-            <h2 className="text-black text-[9px] sm:text-[10px] md:text-xs lg:text-sm xl:text-lg 2xl:text-2xl 3xl:text-3xl 4xl:text-4xl font-futura-bk uppercase tracking-widest whitespace-pre-line leading-tight text-element">
+            <h2 
+              className="absolute text-black text-[9px] sm:text-[10px] md:text-xs lg:text-sm xl:text-lg 2xl:text-2xl 3xl:text-3xl 4xl:text-4xl font-futura-bk uppercase tracking-widest whitespace-pre-line leading-tight text-element"
+              style={{ top: headingTop }}
+            >
               {data.title}
             </h2>
           </div>
@@ -470,6 +639,7 @@ const BuildingShowcaseSlide = ({ data }) => {
         {/* Right - Building/Cityscape Image */}
         <div className="w-[60%] sm:w-[60%] md:w-[62%] lg:w-[63%] xl:w-[64%] 2xl:w-[65%] 3xl:w-[65%] 4xl:w-[65%] relative h-full overflow-hidden group cursor-pointer flex items-center">
           <img
+            ref={imageRef}
             src={data.buildingImageSrc}
             className="w-full h-auto object-cover object-[80%_50%] text-element transition-all duration-700 ease-out group-hover:scale-105"
             alt=""
@@ -484,6 +654,7 @@ const BuildingShowcaseSlide = ({ data }) => {
 
 // ============================================
 // SLIDE TYPE: buildingElements (Slide 7)
+// UPDATED: Heading positioned at 35% from top
 // ============================================
 const BuildingElementsSlide = ({ data }) => {
   return (
@@ -517,7 +688,13 @@ const BuildingElementsSlide = ({ data }) => {
                   alt=""
                 />
               </div>
-              <p className="text-black text-[3.5px] sm:text-[4px] md:text-[4.5px] lg:text-[5px] xl:text-[6px] 2xl:text-[9px] 3xl:text-[11px] 4xl:text-[15px] font-futura-bk leading-snug mt-0.5 sm:mt-0.5 md:mt-1 lg:mt-1 xl:mt-1.5 2xl:mt-2 3xl:mt-2.5 4xl:mt-3 uppercase tracking-wide text-element text-right">
+              {/* Cream/Ivory Gradient Fade Effect */}
+              <p 
+                className="text-neutral-800 text-[3.5px] sm:text-[4px] md:text-[4.5px] lg:text-[5px] xl:text-[6px] 2xl:text-[9px] 3xl:text-[11px] 4xl:text-[15px] font-futura-bk leading-snug mt-0.5 sm:mt-0.5 md:mt-1 lg:mt-1 xl:mt-1.5 2xl:mt-2 3xl:mt-2.5 4xl:mt-3 uppercase tracking-wide text-element text-right px-1.5 sm:px-2 md:px-2.5 lg:px-3 xl:px-4 2xl:px-5 py-0.5 sm:py-1 md:py-1.5 lg:py-2 xl:py-2.5 2xl:py-3 rounded-sm"
+                style={{ 
+                  background: 'linear-gradient(90deg, transparent 0%, rgba(255, 253, 245, 0.9) 25%, rgba(250, 248, 240, 0.95) 100%)'
+                }}
+              >
                 {element.text}
               </p>
             </div>
@@ -534,10 +711,13 @@ const BuildingElementsSlide = ({ data }) => {
         </div>
 
         {/* Right Section - Title, Description, Squares */}
-        <div className="w-[35%] sm:w-[35%] md:w-[35%] lg:w-[35%] xl:w-[35%] 2xl:w-[35%] 3xl:w-[35%] 4xl:w-[35%] px-3 py-4 sm:px-4 sm:py-5 md:px-5 md:py-6 lg:px-6 lg:py-8 xl:px-8 xl:py-10 2xl:px-14 2xl:py-16 3xl:px-20 3xl:py-20 4xl:px-28 4xl:py-28 flex flex-col justify-between h-full">
-          {/* Title at top */}
+        <div className="w-[35%] sm:w-[35%] md:w-[35%] lg:w-[35%] xl:w-[35%] 2xl:w-[35%] 3xl:w-[35%] 4xl:w-[35%] px-3 py-4 sm:px-4 sm:py-5 md:px-5 md:py-6 lg:px-6 lg:py-8 xl:px-8 xl:py-10 2xl:px-14 2xl:py-16 3xl:px-20 3xl:py-20 4xl:px-28 4xl:py-28 flex flex-col justify-between h-full relative">
+          {/* Title - positioned at 35% from top */}
           <div className="text-right">
-            <h2 className="text-black text-[9px] sm:text-[10px] md:text-xs lg:text-sm xl:text-lg 2xl:text-2xl 3xl:text-3xl 4xl:text-4xl font-futura-bk uppercase tracking-wide text-element">
+            <h2 
+              className="absolute text-black text-[9px] sm:text-[10px] md:text-xs lg:text-sm xl:text-lg 2xl:text-2xl 3xl:text-3xl 4xl:text-4xl font-futura-bk uppercase tracking-wide text-element right-3 sm:right-4 md:right-5 lg:right-6 xl:right-8 2xl:right-14 3xl:right-20 4xl:right-28"
+              style={{ top: '10%' }}
+            >
               {data.title}
             </h2>
           </div>
@@ -565,7 +745,6 @@ const BuildingElementsSlide = ({ data }) => {
     </div>
   );
 };
-
 // ============================================
 // SLIDE TYPE: fullImage (Slide 8)
 // ============================================
@@ -583,10 +762,19 @@ const FullImageSlide = ({ data }) => {
 
 // ============================================
 // SLIDE TYPE: mapSlide (Slide 9)
+// UPDATED: Heading aligned with map image top
 // ============================================
 const MapSlide = ({ data }) => {
+  const containerRef = useRef(null);
+  const mapImageRef = useRef(null);
+  
+  const headingTop = useImageTopAlignment(mapImageRef, containerRef, {
+    defaultTopPercent: 15,
+    minTopPx: 16,
+  });
+
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full" ref={containerRef}>
       {/* Background */}
       <img
         src={data.backgroundSrc}
@@ -597,9 +785,12 @@ const MapSlide = ({ data }) => {
       <div className="absolute inset-0 flex">
         {/* Left Section - Title, Distances, Squares */}
         <div className="w-[35%] sm:w-[35%] md:w-[35%] lg:w-[35%] xl:w-[35%] 2xl:w-[35%] 3xl:w-[35%] 4xl:w-[35%] px-3 py-4 sm:px-4 sm:py-5 md:px-5 md:py-6 lg:px-6 lg:py-8 xl:px-8 xl:py-10 2xl:px-14 2xl:py-16 3xl:px-20 3xl:py-20 4xl:px-28 4xl:py-28 flex flex-col justify-between h-full relative">
-          {/* Title at top */}
+          {/* Title - dynamically positioned */}
           <div>
-            <h2 className="text-black text-[9px] sm:text-[10px] md:text-xs lg:text-sm xl:text-lg 2xl:text-2xl 3xl:text-3xl 4xl:text-4xl font-futura-bk uppercase tracking-widest whitespace-pre-line leading-tight text-element absolute top-[15%] sm:top-[16%] md:top-[17%] lg:top-[18%] xl:top-[20%] 2xl:top-40 3xl:top-52 4xl:top-72">
+            <h2 
+              className="text-black text-[9px] sm:text-[10px] md:text-xs lg:text-sm xl:text-lg 2xl:text-2xl 3xl:text-3xl 4xl:text-4xl font-futura-bk uppercase tracking-widest whitespace-pre-line leading-tight text-element absolute"
+              style={{ top: headingTop }}
+            >
               {data.title}
             </h2>
           </div>
@@ -629,6 +820,7 @@ const MapSlide = ({ data }) => {
         {/* Right Section - Map Image */}
         <div className="w-[65%] sm:w-[65%] md:w-[65%] lg:w-[65%] xl:w-[65%] 2xl:w-[70%] 3xl:w-[65%] 4xl:w-[65%] relative h-full overflow-hidden group cursor-pointer flex items-center">
           <img
+            ref={mapImageRef}
             src={data.mapImageSrc}
             className="w-full h-full object-cover text-element transition-all duration-700 ease-out group-hover:scale-105 absolute right-0 pl-13 xl:object-[0%]"
             alt=""
@@ -653,12 +845,22 @@ const FullImageSlide2 = ({ data }) => {
     </div>
   );
 };
+
 // ============================================
 // SLIDE TYPE: portfolioSlide (Slide 11)
+// UPDATED: Text aligned with building images container top
 // ============================================
 const PortfolioSlide = ({ data }) => {
+  const containerRef = useRef(null);
+  const imagesContainerRef = useRef(null);
+  
+  const headingTop = useImageTopAlignment(imagesContainerRef, containerRef, {
+    defaultTopPercent: 18,
+    minTopPx: 16,
+  });
+
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full" ref={containerRef}>
       {/* Background Image */}
       <img
         src={data.backgroundSrc}
@@ -675,8 +877,9 @@ const PortfolioSlide = ({ data }) => {
                 key={index}
                 className="flex-1 flex flex-col group cursor-pointer relative h-full overflow-hidden justify-center "
               >
-                {/* Full height image */}
+                {/* Full height image - ref on first image container */}
                 <img
+                  ref={index === 0 ? imagesContainerRef : null}
                   src={building.src}
                   className="w-full h-[65%] object-cover text-element transition-all duration-700 ease-out group-hover:scale-105"
                   style={{
@@ -706,8 +909,11 @@ const PortfolioSlide = ({ data }) => {
           {/* Spacer */}
           <div></div>
 
-          {/* Text lines */}
-          <div className="text-right absolute right-3 sm:right-4 md:right-5 lg:right-6 xl:right-8 2xl:right-14 3xl:right-20 4xl:right-28 top-[15%] sm:top-[16%] md:top-[17%] lg:top-[18%] xl:top-[20%] 2xl:top-40 3xl:top-52 4xl:top-72">
+          {/* Text lines - dynamically positioned */}
+          <div 
+            className="text-right absolute right-3 sm:right-4 md:right-5 lg:right-6 xl:right-8 2xl:right-14 3xl:right-20 4xl:right-28"
+            style={{ top: headingTop }}
+          >
             {data.textLines.map((line, index) => (
               <p
                 key={index}

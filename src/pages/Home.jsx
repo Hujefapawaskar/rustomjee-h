@@ -301,7 +301,7 @@ const Home = () => {
       <Loader>
         {scrollEnabled && <ReactLenis root options={{ duration: 3 }} />}
         
-        <div ref={container} className="w-full overflow-hidden bg-[#dedbd4] font-futura-bk tracking-wider">
+        <div ref={container} className="w-full overflow-hidden bg-[#dedbd4] font-futura-lt tracking-wider">
           
           {/* --- SECTION 1: INTRO --- */}
           <section ref={section1} className="w-full relative overflow-hidden z-10 -mb-[28vh]">
