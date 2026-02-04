@@ -53,8 +53,8 @@ export const type1SlidesData = [
         },
         {
           lines: [
-            "This is a part of Mumbai where nothing new can truly come again. What exists here is finite and that scarcity brings with it a responsibility. When",
-            "something is this rare, it demands restraint.",
+            "This is a part of Mumbai where nothing new can truly come again. What exists here is finite and that scarcity brings with it a responsibility. ",
+            "When something is this rare, it demands restraint.",
             "Every decision has to be considered, edited, intentional.",
           ]
         },
@@ -313,7 +313,7 @@ export const type1SlidesData = [
   {
     id: 10,
     slideType: "fullImageContain",
-    imageSrc: "/slides/10.png",
+    imageSrc: "/slides/10.webp",
   },
 
   // ============================================

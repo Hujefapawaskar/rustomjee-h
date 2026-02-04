@@ -309,7 +309,7 @@ const SplitBackgroundSlide = ({ data }) => {
                 {renderParagraphs(
                   data.rightSection.paragraphs,
                   "right",
-                  "text-[5px] sm:text-[6px] md:text-[7px] lg:text-[8px] xl:text-[10px] 2xl:text-sm 3xl:text-lg 4xl:text-2xl",
+                  "text-[5px] sm:text-[6px] md:text-[7px] lg:text-[10px] xl:text-[12px] 2xl:text-lg 3xl:text-2xl 4xl:text-4xl",
                 )}
               </div>
             </div>
@@ -397,7 +397,7 @@ const ThreeArchitectsSlide = ({ data }) => {
         </div>
 
         {/* Right Section - 3 Architect Cards */}
-        <div className="w-[75%] sm:w-[74%] md:w-[72%] lg:w-[70%] xl:w-[68%] 2xl:w-[50%] 3xl:w-[50%] 4xl:w-[50%] flex items-center justify-between py-3 sm:py-4 md:py-5 lg:py-6 xl:py-8 2xl:py-12 3xl:py-16 4xl:py-20 pr-3 sm:pr-4 md:pr-5 lg:pr-6 xl:pr-8 2xl:pr-14 3xl:pr-20 4xl:pr-28">
+        <div className="w-[75%] sm:w-[74%] md:w-[72%] lg:w-[70%] xl:w-[68%] 2xl:w-[60%] 3xl:w-[50%] 4xl:w-[50%] flex items-center justify-between py-3 sm:py-4 md:py-5 lg:py-6 xl:py-8 2xl:py-12 3xl:py-16 4xl:py-20 pr-3 sm:pr-4 md:pr-5 lg:pr-6 xl:pr-8 2xl:pr-14 3xl:pr-20 4xl:pr-28">
           <div 
             ref={imageContainerRef}
             className="flex gap-2 sm:gap-2.5 md:gap-3 lg:gap-4 xl:gap-5 2xl:gap-6 3xl:gap-8 4xl:gap-10 w-full items-start"
@@ -430,7 +430,7 @@ const ThreeArchitectsSlide = ({ data }) => {
 
                 {/* Description - INCREASED SIZE */}
                 {architect.description && (
-                  <p className="text-black text-[5px] sm:text-[5.5px] md:text-[6px] lg:text-[7px] xl:text-[9px] 2xl:text-[15px] 3xl:text-[19px] 4xl:text-[26px] font-futura-bk leading-relaxed lg:leading-loose mt-1.5 sm:mt-2 md:mt-2.5 lg:mt-3 xl:mt-3.5 2xl:mt-4 3xl:mt-5 4xl:mt-6 text-justify tracking-tight text-element">
+                  <p className="text-black text-[5px] sm:text-[5.5px] md:text-[6px] lg:text-[10px] xl:text-[14px] 2xl:text-[19px] 3xl:text-[23px] 4xl:text-[34px] font-futura-bk leading-relaxed lg:leading-loose mt-1.5 sm:mt-2 md:mt-2.5 lg:mt-3 xl:mt-3.5 2xl:mt-4 3xl:mt-5 4xl:mt-6 text-justify tracking-tight text-element">
                     {architect.description}
                   </p>
                 )}
@@ -513,7 +513,7 @@ const ArchitectIndividualSlide = ({ data }) => {
               paragraph.lines.map((line, lIndex) => (
                 <p
                   key={lIndex}
-                  className={`text-black text-[5px] sm:text-[6px] md:text-[7px] lg:text-[8px] xl:text-[11px] 2xl:text-[12px] 3xl:text-[17px] 4xl:text-[23px] font-futura-bk leading-[1.6] sm:leading-[1.6] md:leading-[1.65] lg:leading-[1.7] xl:leading-[1.75] 2xl:leading-[1.8] ${textAlignClass}`}
+                  className={`text-black text-[5px] sm:text-[6px] md:text-[7px] lg:text-[10px] xl:text-[12px] 2xl:text-[17px] 3xl:text-[22.5px] 4xl:text-[34px] font-futura-bk leading-[1.6] sm:leading-[1.6] md:leading-[1.65] lg:leading-[1.7] xl:leading-[1.75] 2xl:leading-[1.8] ${textAlignClass}`}
                 >
                   {line}
                 </p>
