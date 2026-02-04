@@ -451,11 +451,53 @@ const ArchitectIndividualSlide = ({ data }) => {
   const isImageLeft = data.layoutDirection === "imageLeft";
   const containerRef = useRef(null);
   const imageRef = useRef(null);
+  const paragraphRef = useRef(null);
+  const [paragraphBottom, setParagraphBottom] = useState('auto');
   
   const headingTop = useImageTopAlignment(imageRef, containerRef, {
     defaultTopPercent: 18,
     minTopPx: 16,
   });
+
+  // Calculate paragraph position so its bottom aligns with image bottom
+  useEffect(() => {
+    const calculateParagraphPosition = () => {
+      if (!imageRef.current || !containerRef.current) return;
+      
+      const imageRect = imageRef.current.getBoundingClientRect();
+      const containerRect = containerRef.current.getBoundingClientRect();
+      
+      // Get the bottom of the image relative to the container
+      const imageBottom = imageRect.bottom - containerRect.top;
+      
+      // Calculate from the bottom of the container
+      const containerHeight = containerRect.height;
+      const bottomOffset = containerHeight - imageBottom;
+      
+      setParagraphBottom(`${bottomOffset}px`);
+    };
+
+    calculateParagraphPosition();
+    
+    // Small delay to ensure image is rendered
+    const timeout = setTimeout(calculateParagraphPosition, 100);
+    
+    window.addEventListener('resize', calculateParagraphPosition);
+    
+    // Recalculate when image loads
+    const img = imageRef.current;
+    if (img) {
+      img.addEventListener('load', calculateParagraphPosition);
+    }
+
+    return () => {
+      clearTimeout(timeout);
+      window.removeEventListener('resize', calculateParagraphPosition);
+      if (img) {
+        img.removeEventListener('load', calculateParagraphPosition);
+      }
+    };
+  }, []);
 
   // Render paragraphs as continuous text block with line breaks
   const renderArchitectParagraphs = (paragraphs, alignment) => {
@@ -471,7 +513,7 @@ const ArchitectIndividualSlide = ({ data }) => {
               paragraph.lines.map((line, lIndex) => (
                 <p
                   key={lIndex}
-                  className={`text-black text-[5px] sm:text-[6px] md:text-[7px] lg:text-[8px] xl:text-[11px] 2xl:text-[15px] 3xl:text-[17px] 4xl:text-[23px] font-futura-bk leading-[1.6] sm:leading-[1.6] md:leading-[1.65] lg:leading-[1.7] xl:leading-[1.75] 2xl:leading-[1.8] ${textAlignClass}`}
+                  className={`text-black text-[5px] sm:text-[6px] md:text-[7px] lg:text-[8px] xl:text-[11px] 2xl:text-[12px] 3xl:text-[17px] 4xl:text-[23px] font-futura-bk leading-[1.6] sm:leading-[1.6] md:leading-[1.65] lg:leading-[1.7] xl:leading-[1.75] 2xl:leading-[1.8] ${textAlignClass}`}
                 >
                   {line}
                 </p>
@@ -520,11 +562,12 @@ const ArchitectIndividualSlide = ({ data }) => {
                 </p>
               </div>
 
-              {/* Spacer to push content down */}
-              <div className="flex-1"></div>
-
-              {/* Bottom - Paragraphs */}
-              <div className="pb-[12%] sm:pb-[14%] md:pb-[16%] lg:pb-[18%] xl:pb-[20%] 2xl:pb-[22%] 3xl:pb-[22%] 4xl:pb-[22%] xl:h-full 2xl:h-auto xl:flex xl:items-center xl:justify-end">
+              {/* Bottom - Paragraphs - dynamically positioned */}
+              <div 
+                ref={paragraphRef}
+                className="absolute right-3 sm:right-4 md:right-5 lg:right-6 xl:right-8 2xl:right-10 3xl:right-14 4xl:right-20 left-3 sm:left-4 md:left-5 lg:left-6 xl:left-8 2xl:left-10 3xl:left-14 4xl:left-20"
+                style={{ bottom: paragraphBottom }}
+              >
                 {renderArchitectParagraphs(data.paragraphs, "right")}
               </div>
 
@@ -555,11 +598,12 @@ const ArchitectIndividualSlide = ({ data }) => {
                 </p>
               </div>
 
-              {/* Spacer to push content down */}
-              <div className="flex-1"></div>
-
-              {/* Bottom - Paragraphs */}
-              <div className="pb-[12%] sm:pb-[14%] md:pb-[16%] lg:pb-[18%] xl:pb-[20%] 2xl:pb-[22%] 3xl:pb-[22%] 4xl:pb-[22%] xl:h-full 2xl:h-auto xl:flex  xl:items-center xl:justify-start">
+              {/* Bottom - Paragraphs - dynamically positioned */}
+              <div 
+                ref={paragraphRef}
+                className="absolute left-3 sm:left-4 md:left-5 lg:left-6 xl:left-8 2xl:left-10 3xl:left-14 4xl:left-20 right-3 sm:right-4 md:right-5 lg:right-6 xl:right-8 2xl:right-10 3xl:right-14 4xl:right-20"
+                style={{ bottom: paragraphBottom }}
+              >
                 {renderArchitectParagraphs(data.paragraphs, "left")}
               </div>
 
@@ -690,7 +734,7 @@ const BuildingElementsSlide = ({ data }) => {
               </div>
               {/* Cream/Ivory Gradient Fade Effect */}
               <p 
-                className="text-neutral-800 text-[3.5px] sm:text-[4px] md:text-[4.5px] lg:text-[5px] xl:text-[6px] 2xl:text-[9px] 3xl:text-[11px] 4xl:text-[15px] font-futura-bk leading-snug mt-0.5 sm:mt-0.5 md:mt-1 lg:mt-1 xl:mt-1.5 2xl:mt-2 3xl:mt-2.5 4xl:mt-3 uppercase tracking-wide text-element text-right px-1.5 sm:px-2 md:px-2.5 lg:px-3 xl:px-4 2xl:px-5 py-0.5 sm:py-1 md:py-1.5 lg:py-2 xl:py-2.5 2xl:py-3 rounded-sm"
+                className="text-neutral-800 text-[3.5px] sm:text-[4px] md:text-[4.5px] lg:text-[6px] xl:text-[7px] 2xl:text-[9px] 3xl:text-[12px] 4xl:text-[15px] font-futura-bk leading-snug mt-0.5 sm:mt-0.5 md:mt-1 lg:mt-1 xl:mt-1.5 2xl:mt-2 3xl:mt-2.5 4xl:mt-3 uppercase tracking-wide text-element text-right px-1.5 sm:px-2 md:px-2.5 lg:px-3 xl:px-4 2xl:px-5 py-0.5 sm:py-1 md:py-1.5 lg:py-2 xl:py-2.5 2xl:py-3 rounded-sm"
                 style={{ 
                   background: 'linear-gradient(90deg, transparent 0%, rgba(255, 253, 245, 0.9) 25%, rgba(250, 248, 240, 0.95) 100%)'
                 }}
@@ -728,7 +772,7 @@ const BuildingElementsSlide = ({ data }) => {
           {/* Description and Squares at bottom */}
           <div className="text-right">
             {data.description && (
-              <p className="text-black text-[4.5px] sm:text-[5px] md:text-[5.5px] lg:text-[6px] xl:text-[8px] 2xl:text-sm 3xl:text-sm 4xl:text-lg font-futura-bk leading-relaxed mb-1.5 sm:mb-2 md:mb-2.5 lg:mb-3 xl:mb-4 2xl:mb-6 3xl:mb-8 4xl:mb-10 text-element">
+              <p className="text-black text-[4.5px] sm:text-[5px] md:text-[5.5px] lg:text-[10px] xl:text-[13px] 2xl:text-[16px] 3xl:text-[20px] 4xl:text-lg font-futura-bk leading-relaxed mb-1.5 sm:mb-2 md:mb-2.5 lg:mb-3 xl:mb-4 2xl:mb-6 3xl:mb-8 4xl:mb-10 text-element">
                 {data.description}
               </p>
             )}
@@ -801,7 +845,7 @@ const MapSlide = ({ data }) => {
               {data.distances.map((item, index) => (
                 <p
                   key={index}
-                  className="text-black text-[5px] sm:text-[6px] md:text-[7px] lg:text-[8px] xl:text-[10px] 2xl:text-sm 3xl:text-base 4xl:text-xl font-futura-bk text-element"
+                  className="text-black text-[5px] sm:text-[6px] md:text-[8px] lg:text-[11px] xl:text-[13px] 2xl:text-lg 3xl:text-xl 4xl:text-xl font-futura-bk text-element"
                 >
                   {item.place}: {item.distance}
                 </p>
@@ -853,11 +897,47 @@ const FullImageSlide2 = ({ data }) => {
 const PortfolioSlide = ({ data }) => {
   const containerRef = useRef(null);
   const imagesContainerRef = useRef(null);
+  const [labelOffset, setLabelOffset] = useState(0);
   
   const headingTop = useImageTopAlignment(imagesContainerRef, containerRef, {
     defaultTopPercent: 18,
     minTopPx: 16,
   });
+
+  // Calculate the label offset from top of image container
+  useEffect(() => {
+    const calculateLabelOffset = () => {
+      if (!imagesContainerRef.current || !containerRef.current) return;
+      
+      const imageRect = imagesContainerRef.current.getBoundingClientRect();
+      const containerRect = containerRef.current.getBoundingClientRect();
+      
+      // Get the top of the image relative to the main container
+      // Add a small pixel offset (e.g., 8-12px) from the top of the image
+      const imageTop = imageRect.top - containerRect.top;
+      const offsetFromImageTop = 8; // pixels below the top of the image
+      
+      setLabelOffset(imageTop + offsetFromImageTop);
+    };
+
+    calculateLabelOffset();
+    
+    // Recalculate on resize
+    window.addEventListener('resize', calculateLabelOffset);
+    
+    // Also recalculate after images load
+    const img = imagesContainerRef.current;
+    if (img) {
+      img.addEventListener('load', calculateLabelOffset);
+    }
+
+    return () => {
+      window.removeEventListener('resize', calculateLabelOffset);
+      if (img) {
+        img.removeEventListener('load', calculateLabelOffset);
+      }
+    };
+  }, []);
 
   return (
     <div className="relative w-full h-full" ref={containerRef}>
@@ -875,7 +955,7 @@ const PortfolioSlide = ({ data }) => {
             {data.buildings.map((building, index) => (
               <div
                 key={index}
-                className="flex-1 flex flex-col group cursor-pointer relative h-full overflow-hidden justify-center "
+                className="flex-1 flex flex-col group cursor-pointer relative h-full overflow-hidden justify-center"
               >
                 {/* Full height image - ref on first image container */}
                 <img
@@ -887,11 +967,14 @@ const PortfolioSlide = ({ data }) => {
                   }}
                   alt={building.name}
                 />
-                <div className="absolute inset-0 bg-black/0  transition-all duration-500" />
+                <div className="absolute inset-0 bg-black/0 transition-all duration-500" />
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
 
-                {/* Label at TOP of image */}
-                <div className="absolute top-2 sm:top-17 md:top-19 lg:top-35 xl:top-50 2xl:top-50 3xl:top-72 4xl:top-96 left-0 right-0 text-center">
+                {/* Label positioned dynamically from image top */}
+                <div 
+                  className="absolute left-0 right-0 text-center"
+                  style={{ top: `${labelOffset}px` }}
+                >
                   <p className="text-white text-[5px] sm:text-[5.5px] md:text-[6px] lg:text-[7px] xl:text-[9px] 2xl:text-sm 3xl:text-base 4xl:text-xl uppercase font-futura-bk tracking-wider text-element drop-shadow-lg">
                     {building.name}
                   </p>
@@ -917,7 +1000,7 @@ const PortfolioSlide = ({ data }) => {
             {data.textLines.map((line, index) => (
               <p
                 key={index}
-                className="text-black text-[6px] sm:text-[7px] md:text-[8px] lg:text-[9px] xl:text-xs 2xl:text-2xl 3xl:text-3xl 4xl:text-4xl font-futura-bk tracking-widest uppercase text-element leading-relaxed"
+                className="text-black text-[6px] sm:text-[7px] md:text-[8px] lg:text-[9px] xl:text-xs 2xl:text-xl 3xl:text-3xl 4xl:text-4xl font-futura-bk tracking-widest uppercase text-element leading-relaxed"
               >
                 {line}
               </p>

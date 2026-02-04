@@ -345,7 +345,7 @@ const Home = () => {
                     className="absolute bottom-0 w-full text-center text-4xl max-md:text-2xl max-lg:text-2xl max-xl:text-3xl 3xl:text-4xl 4xl:text-6xl text-white opacity-0 uppercase" 
                      
                   >
-                    A quiet statement perched above the tides of time.
+                    A quiet statement perched above the tides of time
                   </h1>
 
                   {/* Intro Text 2 */}
