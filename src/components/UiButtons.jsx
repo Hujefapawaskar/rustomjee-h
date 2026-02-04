@@ -27,6 +27,9 @@ export default function UIButtons() {
   const categoryContainerRef = useRef(null);
   const [pathButtonsPosition, setPathButtonsPosition] = useState({ left: 0 });
   const [hoveredCategory, setHoveredCategory] = useState(null);
+  
+  // Track if path dropdown is visible
+  const [isPathDropdownVisible, setIsPathDropdownVisible] = useState(false);
 
   const categories = [
     { id: "portfolio", icon: RiPagesLine, label: "Portfolio" },
@@ -87,10 +90,11 @@ export default function UIButtons() {
     }
   }, [selectedCategory, updatePathButtonsPosition]);
 
-  // Animate path buttons appearing/disappearing
+  // Animate path dropdown when visibility changes
   useEffect(() => {
-    if (pathButtonsRef.current) {
-      if (selectedCategory) {
+    if (pathButtonsRef.current && selectedCategory) {
+      if (isPathDropdownVisible) {
+        // Fade in
         gsap.fromTo(
           pathButtonsRef.current,
           {
@@ -104,7 +108,7 @@ export default function UIButtons() {
             scale: 1,
             duration: 0.3,
             ease: "back.out(1.7)",
-          },
+          }
         );
 
         // Animate individual path buttons
@@ -121,9 +125,18 @@ export default function UIButtons() {
             duration: 0.3,
             stagger: 0.05,
             ease: "power2.out",
-          },
+          }
         );
       }
+    }
+  }, [isPathDropdownVisible, selectedCategory]);
+
+  // Show dropdown when category is first selected
+  useEffect(() => {
+    if (selectedCategory) {
+      setIsPathDropdownVisible(true);
+    } else {
+      setIsPathDropdownVisible(false);
     }
   }, [selectedCategory]);
 
@@ -138,7 +151,7 @@ export default function UIButtons() {
 
       // Check if click is on a portfolio card on the map
       const isPortfolioCard = event.target.closest(
-        '[data-portfolio-card="true"]',
+        '[data-portfolio-card="true"]'
       );
 
       if (!isInsideContainer && !isInsidePathCard && !isPortfolioCard) {
@@ -174,7 +187,7 @@ export default function UIButtons() {
 
         setHoveredCategory(null);
 
-        if (pathButtonsRef.current) {
+        if (pathButtonsRef.current && isPathDropdownVisible) {
           gsap.to(pathButtonsRef.current, {
             opacity: 0,
             y: 10,
@@ -182,6 +195,7 @@ export default function UIButtons() {
             duration: 0.2,
             ease: "power2.in",
             onComplete: () => {
+              setIsPathDropdownVisible(false);
               setSelectedCategory(null);
               setSelectedPath(null);
             },
@@ -197,7 +211,7 @@ export default function UIButtons() {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [setSelectedCategory, setSelectedPath]);
+  }, [setSelectedCategory, setSelectedPath, isPathDropdownVisible]);
 
   // Liquid hover animations
   const handleMouseEnter = (e, catId) => {
@@ -264,6 +278,21 @@ export default function UIButtons() {
   };
 
   const handleCategoryClick = (catId) => {
+    // If clicking on already selected category
+    if (selectedCategory === catId) {
+      // If a path is selected, deselect path and show dropdown
+      if (selectedPath) {
+        setSelectedPath(null);
+        setIsPathDropdownVisible(true);
+      }
+      // If no path selected but dropdown is hidden, show it
+      else if (!isPathDropdownVisible) {
+        setIsPathDropdownVisible(true);
+      }
+      // If dropdown is already visible and no path selected, do nothing
+      return;
+    }
+
     // Reset previous selected category's liquid and colors
     if (selectedCategory && selectedCategory !== catId) {
       const prevLiquid = liquidRefs.current[selectedCategory];
@@ -324,10 +353,27 @@ export default function UIButtons() {
 
     setSelectedCategory(catId);
     setSelectedPath(null);
+    setIsPathDropdownVisible(true);
   };
 
   const handlePathClick = (pathName) => {
-    setSelectedPath(pathName);
+    // Fade out the dropdown first, then set the path
+    if (pathButtonsRef.current) {
+      gsap.to(pathButtonsRef.current, {
+        opacity: 0,
+        y: 10,
+        scale: 0.9,
+        duration: 0.2,
+        ease: "power2.in",
+        onComplete: () => {
+          setIsPathDropdownVisible(false);
+          setSelectedPath(pathName);
+        },
+      });
+    } else {
+      setIsPathDropdownVisible(false);
+      setSelectedPath(pathName);
+    }
   };
 
   const handleCloseCard = () => {
@@ -375,8 +421,8 @@ export default function UIButtons() {
           className="absolute bottom-8 z-9999 left-1/2 -translate-x-1/2 max-sm:bottom-2 max-md:bottom-2 max-lg:bottom-2 max-xl:bottom-2 max-2xl:bottom-2"
           ref={containerRef}
         >
-          {/* PATH BUTTONS - Now outside the category container */}
-          {selectedCategory && (
+          {/* PATH BUTTONS - Conditionally rendered based on visibility state */}
+          {selectedCategory && isPathDropdownVisible && (
             <div
               ref={pathButtonsRef}
               className="backdrop-blur-sm absolute bottom-full font-futura-bk tracking-tight p-2 mb-2 text-white flex flex-row rounded-md shadow-2xl gap-2 max-sm:p-1 max-sm:gap-0.5 max-sm:rounded-xs max-md:p-1 max-md:gap-0.5 max-md:rounded-xs max-lg:p-1 max-lg:gap-0.5 max-lg:rounded-xs max-xl:p-2 max-xl:gap-0.5 max-xl:rounded-xs"
@@ -394,7 +440,7 @@ export default function UIButtons() {
                   >
                     {column.map((item, i) => (
                       <button
-                        className={`p-2 rounded-md flex justify-center text-nowrap ${item.name === selectedPath ? "bg-[#4A5568] text-white" : "hover:bg-[#4A5568]"}  gap-2 items-center transition-colors max-sm:p-0.5 max-sm:rounded-xs max-sm:text-[7px] max-sm:gap-0.5 max-md:p-0.5 max-md:rounded-xs max-md:text-[10px] max-md:gap-0.5 max-lg:p-1 max-lg:rounded-xs max-lg:text-[14px] max-lg:gap-0.5 max-xl:p-1 max-xl:rounded-xs max-xl:text-[14px] max-xl:gap-0.5  max-2xl:p-2 max-2xl:rounded-sm max-2xl:text-[20px] max-2xl:gap-0.5`}
+                        className={`p-2 rounded-md flex justify-center text-nowrap hover:bg-[#4A5568] gap-2 items-center transition-colors max-sm:p-0.5 max-sm:rounded-xs max-sm:text-[7px] max-sm:gap-0.5 max-md:p-0.5 max-md:rounded-xs max-md:text-[10px] max-md:gap-0.5 max-lg:p-1 max-lg:rounded-xs max-lg:text-[14px] max-lg:gap-0.5 max-xl:p-1 max-xl:rounded-xs max-xl:text-[14px] max-xl:gap-0.5 max-2xl:p-2 max-2xl:rounded-sm max-2xl:text-[20px] max-2xl:gap-0.5`}
                         key={`${colIndex}-${i}`}
                         onClick={() => handlePathClick(item.name)}
                       >
@@ -402,7 +448,7 @@ export default function UIButtons() {
                       </button>
                     ))}
                   </div>
-                ),
+                )
               )}
             </div>
           )}

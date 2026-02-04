@@ -8,7 +8,7 @@ const categorycamera = {
   portfolio: {
     position: {
       x: -1170.7995943968986,
-      y:  1905.0565385960772,
+      y: 1905.0565385960772,
       z: -1626.4931434681566,
     },
     target: {
@@ -31,26 +31,14 @@ const categorycamera = {
   },
   recreational: {
     position: {
-      x
-      : 
-      1062.3398290677258,
-      y
-      : 
-      5230.103676894297,
-      z
-      : 
-      -368.75148449153477,
+      x: 1062.3398290677258,
+      y: 5230.103676894297,
+      z: -368.75148449153477,
     },
     target: {
-      x
-      : 
-      1062.334829397268,
-      y
-      : 
-      -351.837128647595,
-      z
-      : 
-      -368.7539666999206
+      x: 1062.334829397268,
+      y: -351.837128647595,
+      z: -368.7539666999206,
     },
   },
   clubs: {
@@ -91,26 +79,14 @@ const categorycamera = {
   },
   hospitals: {
     position: {
-      x
-      : 
-      -670.0788074527104,
-      y
-      : 
-      2392.8387277404017,
-      z
-      : 
-      -2762.1229954277305,
+      x: -670.0788074527104,
+      y: 2392.8387277404017,
+      z: -2762.1229954277305,
     },
     target: {
-      x
-      : 
-      1167.653193244467,
-      y
-      : 
-      -192.79745736202545,
-      z
-      : 
-      -1384.5922421716277,
+      x: 1167.653193244467,
+      y: -192.79745736202545,
+      z: -1384.5922421716277,
     },
   },
   connectivity_present: {
@@ -132,31 +108,91 @@ const CameraAnimations = ({ cameraControlRef }) => {
   const rotationOffset = useRef(0);
   const lastTime = useRef(0);
   const { selectedPath, selectedCategory } = usePaths();
-  
+
   // Parallax state
   const mouse = useRef({ x: 0, y: 0 });
   const smoothMouse = useRef({ x: 0, y: 0 });
   const { gl } = useThree();
 
-  // Parallax settings - adjust these to your liking
-  const PARALLAX_STRENGTH = 35; // How much the camera moves (in world units)
-  const PARALLAX_SMOOTHING = 0.05; // Lower = smoother/slower (0.01-0.1 range)
+  // Drag rotation state
+  const isDragging = useRef(false);
+  const dragStartX = useRef(0);
+  const azimuthAtDragStart = useRef(0);
 
-  // Track mouse position
+  // Parallax settings
+  const PARALLAX_STRENGTH = 35;
+  const PARALLAX_SMOOTHING = 0.05;
+
+  // Drag rotation settings
+  const DRAG_SENSITIVITY = 0.005; // Adjust for faster/slower rotation
+
+  // Track mouse position for parallax
   useEffect(() => {
     const handleMouseMove = (event) => {
-      // Normalize mouse position to -1 to 1 range
+      // Parallax tracking (always active)
       mouse.current.x = (event.clientX / window.innerWidth) * 2 - 1;
       mouse.current.y = -(event.clientY / window.innerHeight) * 2 + 1;
     };
 
     const canvas = gl.domElement;
-    canvas.addEventListener('mousemove', handleMouseMove);
-    
+    canvas.addEventListener("mousemove", handleMouseMove);
+
     return () => {
-      canvas.removeEventListener('mousemove', handleMouseMove);
+      canvas.removeEventListener("mousemove", handleMouseMove);
     };
   }, [gl]);
+
+  // Drag-to-rotate logic (only when no category/path selected)
+  useEffect(() => {
+    const canvas = gl.domElement;
+
+    const handleMouseDown = (event) => {
+      // Only enable drag rotation when no category/path is selected
+      if (selectedCategory || selectedPath) return;
+
+      isDragging.current = true;
+      disableAutoRotate.current = true;
+      dragStartX.current = event.clientX;
+
+      // Store current azimuth angle at drag start
+      if (cameraControlRef.current) {
+        azimuthAtDragStart.current = cameraControlRef.current.azimuthAngle;
+      }
+    };
+
+    const handleMouseMoveDrag = (event) => {
+      if (!isDragging.current || !cameraControlRef.current) return;
+
+      const deltaX = event.clientX - dragStartX.current;
+      const newAzimuth = azimuthAtDragStart.current - deltaX * DRAG_SENSITIVITY;
+
+      cameraControlRef.current.azimuthAngle = newAzimuth;
+    };
+
+    const handleMouseUp = () => {
+      if (!isDragging.current) return;
+
+      isDragging.current = false;
+
+      // Sync rotationOffset to current azimuth so auto-rotate continues smoothly
+      if (cameraControlRef.current) {
+        rotationOffset.current = cameraControlRef.current.azimuthAngle;
+        lastTime.current = 0; // Reset time so rotation continues from current position
+      }
+
+      disableAutoRotate.current = false;
+    };
+
+    canvas.addEventListener("mousedown", handleMouseDown);
+    canvas.addEventListener("mousemove", handleMouseMoveDrag);
+    window.addEventListener("mouseup", handleMouseUp); // Use window to catch mouseup outside canvas
+
+    return () => {
+      canvas.removeEventListener("mousedown", handleMouseDown);
+      canvas.removeEventListener("mousemove", handleMouseMoveDrag);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [gl, selectedCategory, selectedPath, cameraControlRef]);
 
   const goToPosition = (px, py, pz, tx, ty, tz) => {
     if (!cameraControlRef.current) return;
@@ -205,20 +241,19 @@ const CameraAnimations = ({ cameraControlRef }) => {
 
     const cam = cameraControlRef.current;
 
-    // Smoothly interpolate mouse position (lerp)
+    // Smoothly interpolate mouse position for parallax
     smoothMouse.current.x += (mouse.current.x - smoothMouse.current.x) * PARALLAX_SMOOTHING;
     smoothMouse.current.y += (mouse.current.y - smoothMouse.current.y) * PARALLAX_SMOOTHING;
 
-    // Apply parallax offset to the camera's focal offset
-    // This moves what the camera is looking at slightly based on mouse position
+    // Apply parallax offset (always active)
     cam.setFocalOffset(
       smoothMouse.current.x * PARALLAX_STRENGTH,
       -smoothMouse.current.y * PARALLAX_STRENGTH,
       0,
-      false // Don't animate, we're doing smooth lerp ourselves
+      false
     );
 
-    // Auto-rotate logic (only when no category/path selected)
+    // Auto-rotate logic (only when no category/path selected AND not dragging)
     if (!selectedCategory && !selectedPath && !disableAutoRotate.current) {
       const rotationSpeed = 0.1;
       lastTime.current += delta;
