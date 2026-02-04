@@ -131,9 +131,14 @@ export default function StorySlider({
 
       const handleSliderNext = () => {
         if (animatingRef.current) return;
-        animatingRef.current = true;
 
         slideElements = slider.querySelectorAll(".slide");
+
+        // Check if we're at the last slide (prevent looping forward)
+        const currentIdx = parseInt(slideElements[0].getAttribute("data-slide-index"));
+        if (currentIdx >= slides.length - 1) return;
+
+        animatingRef.current = true;
 
         const firstSlide = slideElements[0];
         const secondSlide = slideElements[1];
@@ -201,6 +206,10 @@ export default function StorySlider({
 
       const handleSliderPrev = () => {
         if (animatingRef.current) return;
+
+        // Check if we're at the first slide (prevent looping backward)
+        if (currentSlideIndex <= 0) return;
+
         animatingRef.current = true;
 
         slideElements = slider.querySelectorAll(".slide");
@@ -307,7 +316,7 @@ export default function StorySlider({
         delete window.handleSliderPrev;
       };
     },
-    { scope: containerRef }
+    { scope: containerRef, dependencies: [currentSlideIndex] }
   );
   const handleTouchStart = (e) => {
     touchStartY.current = e.touches[0].clientY;
