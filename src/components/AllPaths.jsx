@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Html } from "@react-three/drei";
+import gsap from "gsap";
 import AnimatedPath from "./AnimatedPath";
 import { usePaths } from "./PathsContext";
 import { pathData } from "./PathData";
@@ -85,17 +86,100 @@ function PathMarker({ position, duration, isActive }) {
   );
 }
 
-// Simple Portfolio Location Card - Image + Name only
-import { RiPagesLine } from "react-icons/ri";
-
-// Portfolio Map Marker - Visible with name always shown
-function PortfolioLocationCard({ path, isSelected, onClick, index }) {
+// Portfolio Map Marker - using callback ref for reliable DOM access
+function PortfolioLocationCard({ path, isSelected, onClick, index, isVisible }) {
   const [isHovered, setIsHovered] = useState(false);
+  const cardRef = useRef(null);
+  const hasAnimatedIn = useRef(false);
+  const prevVisible = useRef(isVisible);
+  const tweenRef = useRef(null);
 
   const lastPoint = path.points[path.points.length - 1];
   const position = Array.isArray(lastPoint)
     ? [lastPoint[0], lastPoint[1] + 100, lastPoint[2]]
     : [lastPoint.x, lastPoint.y + 100, lastPoint.z];
+
+  // Callback ref - fires when element is actually in DOM
+  const setCardRef = useCallback((node) => {
+    if (node && !hasAnimatedIn.current) {
+      cardRef.current = node;
+      hasAnimatedIn.current = true;
+
+      // Initial mount animation
+      gsap.fromTo(
+        node,
+        {
+          opacity: 0,
+          y: -50,
+          scale: 0.5,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.6,
+          delay: index * 0.12,
+          ease: "back.out(1.56)",
+        }
+      );
+    } else if (node) {
+      cardRef.current = node;
+    }
+  }, [index]);
+
+  // Handle visibility toggle
+  useEffect(() => {
+    // Skip if ref not ready or if this is the initial render
+    if (!cardRef.current || !hasAnimatedIn.current) return;
+    
+    // Skip if visibility hasn't changed
+    if (prevVisible.current === isVisible) return;
+    prevVisible.current = isVisible;
+
+    // Kill any ongoing animation
+    if (tweenRef.current) {
+      tweenRef.current.kill();
+    }
+
+    if (isVisible) {
+      // Show animation
+      tweenRef.current = gsap.fromTo(
+        cardRef.current,
+        { opacity: 0, y: -20, scale: 0.9 },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.5,
+          delay: index * 0.08,
+          ease: "back.out(1.7)",
+        }
+      );
+    } else {
+      // Hide animation
+      tweenRef.current = gsap.fromTo(
+        cardRef.current,
+        { opacity: 1, y: 0, scale: 1 },
+        {
+          opacity: 0,
+          y: -20,
+          scale: 0.9,
+          duration: 0.3,
+          delay: index * 0.03,
+          ease: "power2.in",
+        }
+      );
+    }
+  }, [isVisible, index]);
+
+  // Cleanup
+  useEffect(() => {
+    return () => {
+      if (tweenRef.current) {
+        tweenRef.current.kill();
+      }
+    };
+  }, []);
 
   return (
     <Html
@@ -103,13 +187,14 @@ function PortfolioLocationCard({ path, isSelected, onClick, index }) {
       center
       zIndexRange={[100, 0]}
       style={{
-        pointerEvents: 'auto',
+        pointerEvents: isVisible ? 'auto' : 'none',
         userSelect: 'none',
       }}
       occlude={false}
       distanceFactor={2000}
     >
       <div
+        ref={setCardRef}
         data-portfolio-card="true"
         onClick={(e) => {
           e.stopPropagation();
@@ -118,27 +203,10 @@ function PortfolioLocationCard({ path, isSelected, onClick, index }) {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className="cursor-pointer flex flex-col items-center"
-        style={{
-          animation: `markerDrop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards`,
-          animationDelay: `${index * 0.12}s`,
-          opacity: 0,
-        }}
+        style={{ opacity: 0 }}
       >
         <style>
           {`
-            @keyframes markerDrop {
-              0% {
-                opacity: 0;
-                transform: translateY(-50px) scale(0.5);
-              }
-              60% {
-                transform: translateY(8px) scale(1.05);
-              }
-              100% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-              }
-            }
             @keyframes float {
               0%, 100% {
                 transform: translateY(0);
@@ -180,32 +248,11 @@ function PortfolioLocationCard({ path, isSelected, onClick, index }) {
               }
             `}
           >
-            {/* Icon Circle */}
-            {/* <div
-              className={`
-                w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300
-                ${isSelected || isHovered
-                  ? 'bg-[#2279C0] shadow-[0_4px_12px_rgba(34,121,192,0.4)]'
-                  : 'bg-[#4A5568] shadow-[0_2px_8px_rgba(74,85,104,0.3)]'
-                }
-              `}
-            >
-              <RiPagesLine className="text-base text-white" />
-            </div> */}
-
             {/* Text Content */}
             <div className="flex flex-col">
               <span className="font-futura-medium text-lg font-bold text-gray-900 whitespace-nowrap tracking-tight leading-tight">
                 {path.name}
               </span>
-              {/* <span 
-                className={`
-                  font-futura-medium text-sm font-medium uppercase tracking-wide transition-colors duration-300 leading-tight
-                  ${isSelected ? 'text-[#2279C0]' : 'text-gray-500'}
-                `}
-              >
-                Portfolio
-              </span> */}
             </div>
           </div>
 
@@ -262,13 +309,12 @@ function PortfolioLocationCard({ path, isSelected, onClick, index }) {
   );
 }
 
-// Portfolio Cards - Always visible on map
-function PortfolioCards() {
+// Portfolio Cards
+function PortfolioCards({ isVisible }) {
   const { selectedPath, setSelectedPath, selectedCategory, setSelectedCategory } = usePaths();
   const portfolioData = pathData.portfolio || [];
 
   const handleCardClick = (pathName) => {
-    // Set category to portfolio and select the path - this triggers PathCard
     setSelectedCategory("portfolio");
     setSelectedPath(pathName);
   };
@@ -282,6 +328,7 @@ function PortfolioCards() {
           index={index}
           isSelected={selectedCategory === "portfolio" && selectedPath === path.name}
           onClick={() => handleCardClick(path.name)}
+          isVisible={isVisible}
         />
       ))}
     </>
@@ -297,6 +344,12 @@ export default function AllPaths() {
   // Don't render path animations for portfolio
   const shouldRenderPaths = selectedCategory && selectedCategory !== "portfolio";
   
+  // Show portfolio cards when:
+  // - No category selected (null) = default state
+  // - Portfolio category is selected
+  // Hide when other categories are selected (historical, education, work, etc.)
+  const shouldShowPortfolioCards = selectedCategory === null || selectedCategory === "portfolio";
+  
   const filteredPath = selectedPath 
     ? selected.filter((item) => selectedPath === item.name) 
     : selected;
@@ -306,8 +359,8 @@ export default function AllPaths() {
 
   return (
     <>
-      {/* Portfolio cards are ALWAYS visible on the map */}
-      <PortfolioCards />
+      {/* Portfolio cards - visibility controlled by GSAP */}
+      <PortfolioCards isVisible={shouldShowPortfolioCards} />
 
       {/* Path animations for non-portfolio categories */}
       {shouldRenderPaths && filteredPath.map((path, i) => {
