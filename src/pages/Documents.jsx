@@ -629,9 +629,7 @@ export default function Documents() {
   }}
 >
       {/* Subtle pattern overlay for texture */}
-      <div
-        className="absolute inset-0 opacity-[0.03] pointer-events-none"
-      />
+      
 
       {/* Close Button */}
       <button
