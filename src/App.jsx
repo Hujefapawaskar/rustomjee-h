@@ -11,6 +11,7 @@ import HomeNav from "./pages/HomeNav";
 import BackButtonHandler from "./components/BackButtonHandler ";
 import Views from "./components/Views";
 import VideoPlayer from "./pages/VideoPlayer";
+import Documents from "./pages/Documents";
 
 const GlobalLogo = () => (
   <img
@@ -39,6 +40,7 @@ const AppContent = () => {
         <Route path="/map" element={<Map />} />
         <Route path="/views" element={<Views />} />
         <Route path="/videoplayer" element={<VideoPlayer />} />
+        <Route path="/documents" element={<Documents />} />
       </Routes>
     </>
   );

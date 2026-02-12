@@ -4,7 +4,7 @@ import { MdOutline360, MdOutlineInventory } from "react-icons/md";
 import { GrGallery } from "react-icons/gr";
 import { HiOutlineVideoCamera } from "react-icons/hi2";
 import { FloorPlanIcon } from "./Icons";
-import { LuMapPin } from "react-icons/lu";
+import { LuFileText, LuMapPin } from "react-icons/lu";
 import { useNavigate } from 'react-router-dom';
 
 const NavigationBar = forwardRef(({ 
@@ -23,7 +23,8 @@ const NavigationBar = forwardRef(({
     floorPlan: true,
     amenities: true,
     location: true,
-    video: true
+    video: true, 
+    documents: true
   }
 }, ref) => {
   const navigate = useNavigate();
@@ -51,6 +52,7 @@ const NavigationBar = forwardRef(({
     { key: 'floorPlan', Icon: FloorPlanIcon, label: 'Floor Plan', route: '/floorplan', show: showIcons.floorPlan, isCustom: true },
     { key: 'video', Icon: HiOutlineVideoCamera, label: 'Video', route: '/videoplayer', show: showIcons.video },
     { key: 'map', Icon: LuMapPin, label: 'Map', route: '/map', show: showIcons.location },
+    { key: 'documents', Icon: LuFileText, label: 'Docs', route: '/documents', show: showIcons.documents },
     
   ];
 
