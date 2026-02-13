@@ -23,44 +23,21 @@
 export const DOCUMENTS = [
   {
     id: 1,
-    name: "Floor Plan Overview",
-    src: "/documents/floor-plan-overview.png",
+    name: "Brochure",
+    src: "/documents/rustomjee-balmoral-golflinks-brochure.pdf",
     description: "Complete floor plan layout with dimensions and room specifications.",
     category: "Plans",
     dateAdded: "2024-01-15",
   },
   {
     id: 2,
-    name: "Legal Agreement",
-    src: "/documents/legal-agreement.jpg",
+    name: "Brochure 2",
+    src: "/documents/rustomjee-balmoral-golflinks-brochure.pdf",
     description: "Terms and conditions document for property purchase agreement.",
     category: "Legal",
     dateAdded: "2024-01-20",
   },
-  {
-    id: 3,
-    name: "Amenities Brochure",
-    src: "/documents/amenities-brochure.webp",
-    description: "Detailed brochure showcasing all premium amenities and facilities.",
-    category: "Brochure",
-    dateAdded: "2024-02-01",
-  },
-  {
-    id: 4,
-    name: "Payment Schedule",
-    src: "/documents/payment-schedule.png",
-    description: "Comprehensive payment plan with milestone-based installments.",
-    category: "Financial",
-    dateAdded: "2024-02-10",
-  },
-  {
-    id: 5,
-    name: "Site Approval",
-    src: "/documents/site-approval.jpg",
-    description: "Government approved site clearance and construction permits.",
-    category: "Permits",
-    dateAdded: "2024-02-15",
-  },
+  
 ];
 
 // ============================================

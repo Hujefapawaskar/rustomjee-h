@@ -160,7 +160,7 @@ function DocumentCard({ document, index, onSelect, isSelected }) {
   );
 }
 
-// Document Viewer Component
+// Document Viewer Component - PDF Version
 function DocumentViewer({
   document,
   documents,
@@ -170,79 +170,62 @@ function DocumentViewer({
 }) {
   const overlayRef = useRef(null);
   const containerRef = useRef(null);
-  const imageRef = useRef(null);
-  const imageWrapperRef = useRef(null);
-
-  const [zoom, setZoom] = useState(1);
-  const [pan, setPan] = useState({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Reset zoom and pan when document changes
+  // Reset loading state when document changes with fallback timeout
   useEffect(() => {
-    setZoom(1);
-    setPan({ x: 0, y: 0 });
+    setIsLoading(true);
+
+    // Fallback: hide loader after 3 seconds if onLoad doesn't fire
+    const timeout = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+
+    return () => clearTimeout(timeout);
   }, [document?.id]);
 
   // Entry animation
   useEffect(() => {
-    if (overlayRef.current && containerRef.current && imageRef.current) {
+    if (overlayRef.current && containerRef.current) {
       const tl = gsap.timeline();
 
       tl.fromTo(
         overlayRef.current,
         { opacity: 0 },
         { opacity: 1, duration: 0.3, ease: "power2.out" }
-      )
-        .fromTo(
-          containerRef.current,
-          { scale: 0.8, opacity: 0, y: 50 },
-          { scale: 1, opacity: 1, y: 0, duration: 0.5, ease: "back.out(1.4)" },
-          "-=0.1"
-        )
-        .fromTo(
-          imageRef.current,
-          { scale: 1.1, opacity: 0 },
-          { scale: 1, opacity: 1, duration: 0.4, ease: "power2.out" },
-          "-=0.3"
-        );
+      ).fromTo(
+        containerRef.current,
+        { scale: 0.8, opacity: 0, y: 50 },
+        { scale: 1, opacity: 1, y: 0, duration: 0.5, ease: "back.out(1.4)" },
+        "-=0.1"
+      );
     }
   }, []);
 
   // Animate document switch
   const animateDocumentSwitch = useCallback(
     (direction) => {
-      if (isTransitioning || !imageRef.current) return;
+      if (isTransitioning) return;
 
       setIsTransitioning(true);
-      const xDirection = direction === "next" ? -100 : 100;
+      setIsLoading(true);
 
-      const tl = gsap.timeline({
-        onComplete: () => {
-          onNavigate(direction);
-
-          gsap.fromTo(
-            imageRef.current,
-            { x: -xDirection, opacity: 0, scale: 0.95 },
-            {
-              x: 0,
-              opacity: 1,
-              scale: 1,
-              duration: DOCUMENTS_CONFIG.animations.documentSwitch,
-              ease: "power3.out",
-              onComplete: () => setIsTransitioning(false),
-            }
-          );
-        },
-      });
-
-      tl.to(imageRef.current, {
-        x: xDirection,
+      gsap.to(containerRef.current, {
         opacity: 0,
         scale: 0.95,
-        duration: DOCUMENTS_CONFIG.animations.documentSwitch,
-        ease: "power3.in",
+        duration: 0.2,
+        ease: "power2.in",
+        onComplete: () => {
+          onNavigate(direction);
+          gsap.to(containerRef.current, {
+            opacity: 1,
+            scale: 1,
+            duration: 0.3,
+            ease: "power2.out",
+            onComplete: () => setIsTransitioning(false),
+          });
+        },
       });
     },
     [isTransitioning, onNavigate]
@@ -267,73 +250,6 @@ function DocumentViewer({
     }
   }, [onClose]);
 
-  // Zoom functions
-  const getPanLimits = (currentZoom) => {
-    const maxPanPercent = (currentZoom - 1) / currentZoom;
-    return maxPanPercent * 500;
-  };
-
-  const clampPan = (newPan, currentZoom) => {
-    const limit = getPanLimits(currentZoom);
-    return {
-      x: Math.max(-limit, Math.min(limit, newPan.x)),
-      y: Math.max(-limit, Math.min(limit, newPan.y)),
-    };
-  };
-
-  const handleZoomIn = () => setZoom((prev) => Math.min(prev + 0.25, 5));
-
-  const handleZoomOut = () => {
-    const newZoom = Math.max(zoom - 0.25, 1);
-    setZoom(newZoom);
-    if (newZoom <= 1) setPan({ x: 0, y: 0 });
-    else setPan((prev) => clampPan(prev, newZoom));
-  };
-
-  const handleResetZoom = () => {
-    setZoom(1);
-    setPan({ x: 0, y: 0 });
-  };
-
-  // Mouse handlers for panning
-  const handleMouseDown = (e) => {
-    if (zoom > 1) {
-      setIsDragging(true);
-      setDragStart({ x: e.clientX, y: e.clientY });
-      e.preventDefault();
-    }
-  };
-
-  const handleMouseMove = useCallback(
-    (e) => {
-      if (!isDragging) return;
-      const deltaX = e.clientX - dragStart.x;
-      const deltaY = e.clientY - dragStart.y;
-      setPan((prev) =>
-        clampPan({ x: prev.x + deltaX, y: prev.y + deltaY }, zoom)
-      );
-      setDragStart({ x: e.clientX, y: e.clientY });
-    },
-    [isDragging, dragStart, zoom]
-  );
-
-  const handleMouseUp = useCallback(() => setIsDragging(false), []);
-
-  const handleWheel = (e) => {
-    e.preventDefault();
-    const zoomDelta = e.deltaY > 0 ? -0.15 : 0.15;
-    const newZoom = Math.max(1, Math.min(5, zoom + zoomDelta));
-    setZoom(newZoom);
-    if (newZoom <= 1) setPan({ x: 0, y: 0 });
-    else setPan((prev) => clampPan(prev, newZoom));
-  };
-
-  const handleImageClick = () => {
-    if (zoom <= 1 && !isDragging) {
-      setZoom((prev) => Math.min(prev + 0.5, 5));
-    }
-  };
-
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -344,18 +260,6 @@ function DocumentViewer({
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleClose, animateDocumentSwitch]);
-
-  // Mouse event listeners for dragging
-  useEffect(() => {
-    if (isDragging) {
-      window.addEventListener("mousemove", handleMouseMove);
-      window.addEventListener("mouseup", handleMouseUp);
-      return () => {
-        window.removeEventListener("mousemove", handleMouseMove);
-        window.removeEventListener("mouseup", handleMouseUp);
-      };
-    }
-  }, [isDragging, handleMouseMove, handleMouseUp]);
 
   if (!document) return null;
 
@@ -442,103 +346,31 @@ function DocumentViewer({
       {/* Document Container */}
       <div
         ref={containerRef}
-        className="relative w-[90vw] h-[80vh] sm:w-[85vw] sm:h-[85vh] md:w-[80vw] md:h-[80vh] bg-white rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden border-2 border-[#C19A40]/30"
+        className="relative w-[90vw] h-[85vh] sm:w-[85vw] sm:h-[90vh] md:w-[80vw] md:h-[85vh] bg-white rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden border-2 border-[#C19A40]/30"
         style={{ zIndex: 9010 }}
       >
-        {/* Zoom Controls */}
-        <div className="absolute top-2 right-2 sm:top-4 sm:right-4 z-30 flex flex-col gap-1 sm:gap-2">
-          <button
-            onClick={handleZoomIn}
-            className="w-7 h-7 sm:w-9 sm:h-9 bg-white/90 hover:bg-white rounded-full shadow-md cursor-pointer flex items-center justify-center text-gray-600 hover:text-[#C19A40] transition-colors border border-gray-200"
-            title="Zoom In"
-          >
-            <svg
-              className="w-4 h-4 sm:w-5 sm:h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"
-              />
-            </svg>
-          </button>
-          <button
-            onClick={handleZoomOut}
-            className="w-7 h-7 sm:w-9 sm:h-9 bg-white/90 hover:bg-white rounded-full shadow-md cursor-pointer flex items-center justify-center text-gray-600 hover:text-[#C19A40] transition-colors border border-gray-200"
-            title="Zoom Out"
-          >
-            <svg
-              className="w-4 h-4 sm:w-5 sm:h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7"
-              />
-            </svg>
-          </button>
-          <button
-            onClick={handleResetZoom}
-            className="w-7 h-7 sm:w-9 sm:h-9 bg-white/90 hover:bg-white rounded-full shadow-md cursor-pointer flex items-center justify-center text-gray-600 hover:text-[#C19A40] transition-colors border border-gray-200"
-            title="Reset Zoom"
-          >
-            <svg
-              className="w-4 h-4 sm:w-5 sm:h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-              />
-            </svg>
-          </button>
-        </div>
-
-        {/* Zoom Indicator */}
-        <div className="absolute top-2 left-2 sm:top-4 sm:left-4 z-30 bg-white/90 px-2 py-1 rounded text-xs sm:text-sm text-gray-600 border border-gray-200">
-          {Math.round(zoom * 100)}%
-        </div>
-
         {/* Document Index Indicator */}
-        <div className="absolute top-2 left-1/2 -translate-x-1/2 sm:top-4 z-30 bg-[#C19A40] text-white px-3 py-1 rounded-full text-xs sm:text-sm">
-          {currentIndex + 1} / {documents.length}
-        </div>
+        
 
-        {/* Image Container */}
-        <div
-          ref={imageWrapperRef}
-          className="w-full h-full flex items-center justify-center p-4 sm:p-8 pb-16 sm:pb-20 overflow-hidden"
-          onMouseDown={handleMouseDown}
-          onWheel={handleWheel}
-          onClick={handleImageClick}
-          style={{
-            cursor: zoom > 1 ? (isDragging ? "grabbing" : "grab") : "zoom-in",
-          }}
-        >
-          <img
-            ref={imageRef}
-            src={document.src}
-            alt={document.name}
-            className="max-w-full max-h-full object-contain select-none rounded-lg shadow-lg"
-            style={{
-              transform: `scale(${zoom}) translate(${pan.x / zoom}px, ${pan.y / zoom}px)`,
-              transformOrigin: "center center",
-            }}
-            draggable={false}
-          />
-        </div>
+        {/* Loading Spinner */}
+        {isLoading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-white z-20">
+            <div className="flex flex-col items-center gap-3">
+              <div className="w-10 h-10 border-4 border-[#C19A40]/30 border-t-[#C19A40] rounded-full animate-spin" />
+              <p className="text-sm text-gray-500">Loading document...</p>
+            </div>
+          </div>
+        )}
+
+        {/* PDF Viewer */}
+        <iframe
+          key={document.id}
+          src={`${document.src}#toolbar=1&navpanes=0&scrollbar=1`}
+          title={document.name}
+          className="w-full h-full"
+          onLoad={() => setIsLoading(false)}
+          onError={() => setIsLoading(false)}
+        />
 
         {/* Document Name - Bottom Right */}
         <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 z-30 bg-[#FFFBF5]/95 backdrop-blur-sm px-3 py-2 sm:px-4 sm:py-2 rounded-lg shadow-md border border-[#C19A40]/30">
@@ -617,20 +449,17 @@ export default function Documents() {
 
   return (
     <div
-  ref={pageRef}
-  className="min-h-screen font-futura-bk relative"
-  style={{
-    zIndex: 1,
-    backgroundImage: "url('/slides/bg.webp')",
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    backgroundRepeat: "no-repeat",
-    backgroundAttachment: "fixed", // optional: keeps bg fixed while scrolling
-  }}
->
-      {/* Subtle pattern overlay for texture */}
-      
-
+      ref={pageRef}
+      className="min-h-screen font-futura-bk relative"
+      style={{
+        zIndex: 1,
+        backgroundImage: "url('/slides/bg.webp')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
+      }}
+    >
       {/* Close Button */}
       <button
         onClick={handleClose}
