@@ -2,13 +2,20 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import gsap from "gsap";
-import RadarViewIndicator, {
-  getRadarPositionConfig,
-} from "./RadarViewIndicator";
+import RadarViewIndicator from "./RadarViewIndicator";
 
 // Unit Plan SVG Configuration for each floor type
-// Each entry contains the SVG paths and their corresponding balcony view points
 const UNIT_PLAN_SVG_CONFIG = {
+  // Ground floor - no balcony views
+  ground: {
+    totalPoints: 0,
+    regions: [],
+  },
+  // Terrace - no balcony views
+  terrace: {
+    totalPoints: 0,
+    regions: [],
+  },
   // For 1st floor - 4 SVG regions
   "1st": {
     totalPoints: 4,
@@ -129,7 +136,6 @@ const UNIT_PLAN_SVG_CONFIG = {
       },
     ],
   },
-  // For 18th, 19th, 20th floors - no SVG regions (balcony views coming later)
   "20th": {
     totalPoints: 4,
     regions: [
@@ -139,7 +145,6 @@ const UNIT_PLAN_SVG_CONFIG = {
         viewBox: "0 0 121.71675 38.157799",
         transform: "translate(-161.16494,14.649136)",
         path: "m 274.79013,23.508662 -105.26656,-0.261208 -0.0653,-18.2192124 -8.29333,0.065302 0.0333,-2.0806005 0.10389,-0.9581388 0.1039,-0.6349114 0.11543,-0.53101677 0.0346,-0.35785914 0.0808,-0.41557836 0.0693,-0.35785914 0.0923,-0.3232276 0.0577,-0.28859609 0.0923,-0.2885961 0.0808,-0.3001399 0.11544,-0.2308769 0.0577,-0.2539645 0.0924,-0.2655084 0.0923,-0.219333 0.1039,-0.2077892 0.10389,-0.2424207 0.0577,-0.1616139 0.0808,-0.1731576 0.10389,-0.1731576 0.0577,-0.2655083 0.0808,-0.1616139 0.35786,-0.6118238 0.28859,-0.5541044 0.4733,-0.7849812 0.35786,-0.60028 0.68109,-0.9235075 1.45452,-1.6276817 1.06203,-1.0735776 1.316,-1.0851216 1.1313,-0.681087 1.45452,-0.854244 0.92351,-0.473297 1.24674,-0.496386 1.29291,-0.404034 1.37371,-0.323228 1.62768,-0.265508 2.04326,-0.09235 83.86603,0.08081 1.24673,-0.03463 0.87733,0.08081 1.52379,0.277053 1.44298,0.277052 0.98123,0.369403 1.14285,0.438666 1.48915,0.715718 1.09667,0.60028 1.17745,0.761894 0.73882,0.565648 1.50069,1.2929105 1.29292,1.396805 0.86579,1.1082091 0.93504,1.4545241 0.60029,1.1197529 0.62335,1.2698227 0.58875,1.7084887 0.36942,1.43143659 0.24241,1.47761191 0.21934,1.916278 -0.0116,1.5699626 -8.17303,-0.011544 z",
-        // TODO: Adjust these position values based on where this region should appear on 18th.png
         position: { top: "14.8%", left: "52.2%", width: "21.85%" },
       },
       {
@@ -148,7 +153,6 @@ const UNIT_PLAN_SVG_CONFIG = {
         viewBox: "0 0 47.539764 51.818043",
         transform: "translate(-120.66147,-8.8310401)",
         path: "m 161.08331,8.8483992 -18.96128,-0.017359 -21.46056,37.2230808 0.049,14.594961 47.44178,-0.0653 0.049,-37.075119 -7.10157,-0.04898 z",
-        // TODO: Adjust these position values based on where this region should appear on 18th.png
         position: { top: "21.2%", left: "45%", width: "8.56%" },
       },
       {
@@ -157,7 +161,6 @@ const UNIT_PLAN_SVG_CONFIG = {
         viewBox: "0 0 13.233574 36.166428",
         transform: "translate(-51.833337,-169.36015)",
         path: "m 65.061099,205.52658 -13.227764,-0.005 0.01633,-36.16089 7.65308,-5.3e-4 0.0058,3.13416 5.558362,-0.0173 z",
-        // TODO: Adjust these position values based on where this region should appear on 18th.png
         position: { top: "64%", left: "32.73%", width: "2.45%" },
       },
       {
@@ -166,13 +169,10 @@ const UNIT_PLAN_SVG_CONFIG = {
         viewBox: "0 0 12.303158 33.710907",
         transform: "translate(-36.781262,-205.52947)",
         path: "m 49.08442,239.24038 -12.303159,-0.007 0.01632,-33.70391 10.676851,0.0163 0.01632,3.16714 1.591731,-0.008 z",
-        // TODO: Adjust these position values based on where this region should appear on 18th.png
         position: { top: "73.8%", left: "30%", width: "2.24%" },
       },
     ],
   },
-  // 19th floor config - copy this into your UNIT_PLAN_SVG_CONFIG
-
   "18th": {
     totalPoints: 4,
     regions: [
@@ -182,7 +182,6 @@ const UNIT_PLAN_SVG_CONFIG = {
         viewBox: "0 0 121.71392 45.944496",
         transform: "translate(-108.40104,-1.985541)",
         path: "m 228.67199,47.930038 -117.2335,-0.01154 v -7.855815 h 5.19059 V 21.745512 h -8.22803 l 0.088,-2.236417 0.23087,-1.962453 0.48485,-2.054804 0.83115,-2.239506 0.99277,-1.847015 0.9466,-1.4545242 1.15438,-1.5468751 2.28568,-2.1471548 2.35495,-1.6392255 2.60891,-1.3390859 1.98554,-0.6233676 1.80084,-0.4155783 3.16301,-0.2539646 h 84.10844 l 2.53965,0.1847015 1.47761,0.3232276 1.29291,0.369403 1.98554,0.6926305 1.52379,0.7849814 1.80084,1.1082089 1.61614,1.2929105 1.98553,2.0317164 1.8932,2.7243472 0.71572,1.408349 0.66954,1.569962 0.64645,2.077892 0.32323,2.170243 0.20779,2.147154 v 0.946596 h -8.14995 v 18.285447 h 6.71851 z",
-        // TODO: Adjust position values to match where this region appears on 19th.png
         position: { top: "14.8%", left: "52.2%", width: "21.85%" },
       },
       {
@@ -191,7 +190,6 @@ const UNIT_PLAN_SVG_CONFIG = {
         viewBox: "0 0 40.537605 53.194031",
         transform: "translate(-67.835992,-25.488807)",
         path: "M 108.35051,25.488806 H 89.349346 L 67.835993,62.751027 v 14.500371 h 20.358968 v 1.431438 H 108.3736 Z",
-        // TODO: Adjust position values to match where this region appears on 19th.png
         position: { top: "21.2%", left: "45%", width: "7.3%" },
       },
       {
@@ -200,7 +198,6 @@ const UNIT_PLAN_SVG_CONFIG = {
         viewBox: "0 0 31.676308 13.615387",
         transform: "translate(-56.345498,-110.94788)",
         path: "m 88.021804,110.94788 v 13.61538 H 56.345499 v -13.60384 z",
-        // TODO: Adjust position values to match where this region appears on 19th.png
         position: { top: "44%", left: "43%", width: "5.6%" },
       },
       {
@@ -209,13 +206,10 @@ const UNIT_PLAN_SVG_CONFIG = {
         viewBox: "0 0 12.288028 32.080673",
         transform: "translate(14.279734,-223.80049)",
         path: "m -1.9917061,255.88117 v -30.65513 h -3.2977428 v -1.42555 h -8.9902851 v 32.08034 z",
-        // TODO: Adjust position values to match where this region appears on 19th.png
         position: { top: "74.3%", left: "30.24%", width: "2.24%" },
       },
     ],
   },
-  // 20th floor config - copy this into your UNIT_PLAN_SVG_CONFIG
-
   "19th": {
     totalPoints: 4,
     regions: [
@@ -225,7 +219,6 @@ const UNIT_PLAN_SVG_CONFIG = {
         viewBox: "0 0 59.551178 10.392628",
         transform: "translate(-111.09476,30.521934)",
         path: "m 170.64595,-20.202756 v -6.326115 l -0.0857,-0.555067 -0.26121,-0.767297 -0.57955,-1.036666 -0.36733,-0.342834 -0.33467,-0.285697 -0.43119,-0.301316 -0.63491,-0.288594 -0.62337,-0.253965 -0.57719,-0.138526 -0.68109,-0.0231 h -50.55078 l -1.01218,0.10759 -0.63669,0.228555 -0.8979,0.424463 -0.66934,0.604042 -0.35917,0.473437 -0.42446,0.571392 -0.2612,0.636693 -0.16326,0.701995 v 6.644462 z",
-        // TODO: Adjust position values to match where this region appears on 20th.png
         position: { top: "24.3%", left: "57.8%", width: "10.7%" },
       },
       {
@@ -234,7 +227,6 @@ const UNIT_PLAN_SVG_CONFIG = {
         viewBox: "0 0 40.368641 53.211979",
         transform: "translate(-39.52612,42.129889)",
         path: "M 79.89476,-42.129889 V 11.082089 H 59.704758 V -4.5713618 H 39.52612 l 0.04617,-0.4155784 21.429897,-37.1176708 z",
-        // TODO: Adjust position values to match where this region appears on 20th.png
         position: { top: "21.2%", left: "45%", width: "7.3%" },
       },
       {
@@ -243,7 +235,6 @@ const UNIT_PLAN_SVG_CONFIG = {
         viewBox: "0 0 40.34021 13.680737",
         transform: "translate(-27.932862,-43.262469)",
         path: "M 27.932861,43.327769 V 56.943204 H 68.273072 V 43.262467 Z",
-        // TODO: Adjust position values to match where this region appears on 20th.png
         position: { top: "44%", left: "43%", width: "7.34%" },
       },
       {
@@ -252,7 +243,6 @@ const UNIT_PLAN_SVG_CONFIG = {
         viewBox: "0 0 13.950108 33.663116",
         transform: "translate(44.405252,-154.60209)",
         path: "m -30.455145,188.2652 v -30.59939 h -3.299052 V 154.6021 H -44.40525 v 33.6631 z",
-        // TODO: Adjust position values to match where this region appears on 20th.png
         position: { top: "74%", left: "30%", width: "2.46%" },
       },
     ],
@@ -263,11 +253,9 @@ const UNIT_PLAN_SVG_CONFIG = {
 function UnitPlanSvgRegion({
   region,
   onRegionClick,
-  isSelected = false,
   selectedPoint = null,
 }) {
   const pathRef = useRef(null);
-
   const isThisRegionSelected = selectedPoint === region.point;
 
   const handleMouseEnter = () => {
@@ -296,7 +284,6 @@ function UnitPlanSvgRegion({
 
   const handleClick = (e) => {
     e.stopPropagation();
-
     if (pathRef.current) {
       gsap.to(pathRef.current, {
         scale: 1.05,
@@ -307,7 +294,6 @@ function UnitPlanSvgRegion({
         transformOrigin: "center center",
       });
     }
-
     onRegionClick?.(region.point);
   };
 
@@ -371,6 +357,10 @@ function UnitPlanOverlay({
   const config =
     UNIT_PLAN_SVG_CONFIG[floorType] || UNIT_PLAN_SVG_CONFIG["multiple"];
 
+  if (!config.regions || config.regions.length === 0) {
+    return null;
+  }
+
   return (
     <>
       {config.regions.map((region) => (
@@ -391,7 +381,7 @@ const getTotalBalconyPoints = (floorType) => {
   return config.totalPoints;
 };
 
-// Balcony Point Tabs Component - RESPONSIVE: smaller on mobile, aligned right
+// Balcony Point Tabs Component
 function BalconyPointTabs({
   currentPoint,
   onPointChange,
@@ -435,7 +425,7 @@ function BalconyPointTabs({
                 onClick={() => handleTabClick(point)}
                 disabled={!isInteractive || !isAvailable}
                 className={`
-                relative px-2 py-1 text-xs sm:px-4 sm:py-2 sm:text-sm  transition-all duration-200
+                relative px-2 py-1 text-xs sm:px-4 sm:py-2 sm:text-sm transition-all duration-200
                 ${
                   isInteractive && isAvailable
                     ? "cursor-pointer"
@@ -483,13 +473,14 @@ function BalconyPointTabs({
                 )}
               </button>
             );
-          },
+          }
         )}
       </div>
     </div>
   );
 }
-// Balcony View Carousel Component - RESPONSIVE
+
+// Balcony View Carousel Component
 function BalconyViewCarousel({
   floorNumber,
   currentPoint,
@@ -521,7 +512,7 @@ function BalconyViewCarousel({
       gsap.fromTo(
         imageRef.current,
         { opacity: 0, scale: 1.02 },
-        { opacity: 1, scale: 1, duration: 0.4, ease: "power2.out" },
+        { opacity: 1, scale: 1, duration: 0.4, ease: "power2.out" }
       );
     }
   }, [currentPoint, isViewAvailable]);
@@ -529,7 +520,6 @@ function BalconyViewCarousel({
   const handlePrevPoint = (e) => {
     e.stopPropagation();
     if (!isMaster) return;
-
     if (prevButtonRef.current) {
       gsap.to(prevButtonRef.current, {
         scale: 0.9,
@@ -539,7 +529,6 @@ function BalconyViewCarousel({
         ease: "power2.inOut",
       });
     }
-
     const newPoint = currentPoint === 1 ? masterTotalPoints : currentPoint - 1;
     onPointChange(newPoint);
     if ("vibrate" in navigator) navigator.vibrate(20);
@@ -548,7 +537,6 @@ function BalconyViewCarousel({
   const handleNextPoint = (e) => {
     e.stopPropagation();
     if (!isMaster) return;
-
     if (nextButtonRef.current) {
       gsap.to(nextButtonRef.current, {
         scale: 0.9,
@@ -558,7 +546,6 @@ function BalconyViewCarousel({
         ease: "power2.inOut",
       });
     }
-
     const newPoint = currentPoint === masterTotalPoints ? 1 : currentPoint + 1;
     onPointChange(newPoint);
     if ("vibrate" in navigator) navigator.vibrate(20);
@@ -566,7 +553,6 @@ function BalconyViewCarousel({
 
   return (
     <div className="relative w-full h-full font-futura-bk">
-      {/* Balcony Point Tabs - aligned right on mobile */}
       <BalconyPointTabs
         currentPoint={currentPoint}
         onPointChange={onPointChange}
@@ -574,8 +560,6 @@ function BalconyViewCarousel({
         accentColor={accentColor}
         isInteractive={isMaster}
       />
-
-      {/* Balcony View Image - smaller top padding on mobile */}
       <div
         ref={imageRef}
         className="relative inline-block w-full h-full pt-6 sm:pt-10"
@@ -612,7 +596,7 @@ function BalconyViewCarousel({
                     />
                   </svg>
                 </div>
-                <h4 className="text-gray-800  text-xs sm:text-sm mb-1">
+                <h4 className="text-gray-800 text-xs sm:text-sm mb-1">
                   View Not Available
                 </h4>
                 <p className="text-gray-500 text-[10px] sm:text-xs">
@@ -627,8 +611,6 @@ function BalconyViewCarousel({
           </div>
         )}
       </div>
-
-      {/* Navigation Arrows - smaller on mobile */}
       {isMaster && (
         <>
           <button
@@ -651,7 +633,6 @@ function BalconyViewCarousel({
               />
             </svg>
           </button>
-
           <button
             ref={nextButtonRef}
             onClick={handleNextPoint}
@@ -678,7 +659,7 @@ function BalconyViewCarousel({
   );
 }
 
-// Plan Type Toggle Component - RESPONSIVE: smaller on mobile
+// Plan Type Toggle Component
 function PlanTypeToggle({ isUnitPlan, onToggle, borderColor = "#C19A40" }) {
   const toggleRef = useRef(null);
   const sliderRef = useRef(null);
@@ -710,7 +691,7 @@ function PlanTypeToggle({ isUnitPlan, onToggle, borderColor = "#C19A40" }) {
   return (
     <div className="flex items-center gap-1 sm:gap-2 font-futura-bk">
       <span
-        className={`text-[9px] sm:text-xs  transition-colors uppercase ${
+        className={`text-[9px] sm:text-xs transition-colors uppercase ${
           !isUnitPlan ? "text-gray-800" : "text-gray-400"
         }`}
       >
@@ -742,6 +723,26 @@ function PlanTypeToggle({ isUnitPlan, onToggle, borderColor = "#C19A40" }) {
     </div>
   );
 }
+
+// Helper function to get display name for floor - FIXED to handle 0 properly
+const getFloorDisplayName = (floorNumber) => {
+  if (floorNumber === 0) return "Ground";
+  if (floorNumber === 21) return "Terrace";
+  if (floorNumber === null || floorNumber === undefined) return "Unknown";
+  return floorNumber;
+};
+
+// Constants for stroke width calculation
+// Regular floors use scale 0.85 with strokeWidth 3, so visual stroke = 3 * 0.85 = 2.55
+const BASE_STROKE_WIDTH = 3;
+const REGULAR_FLOOR_SCALE = 0.85;
+
+// Calculate stroke width for custom transform floors to match regular floors visually
+// Formula: (baseStroke * regularScale) / customScale
+const getCustomTransformStrokeWidth = (customScale) => {
+  return (BASE_STROKE_WIDTH * REGULAR_FLOOR_SCALE) / customScale;
+};
+
 export default function FloorComparisonPanel({
   show,
   onClose,
@@ -785,16 +786,13 @@ export default function FloorComparisonPanel({
   const headerRef = useRef(null);
   const contentWrapperRef = useRef(null);
   const gridRef = useRef(null);
-  // ADD THIS LINE - Preload click sound
   const clickSoundRef = useRef(null);
 
-  // ADD THIS useEffect - Preload click sound
   useEffect(() => {
     clickSoundRef.current = new Audio("/audio/Click.mp3");
     clickSoundRef.current.volume = 0.3;
   }, []);
 
-  // ADD THIS function - Play click sound
   const playClickSound = () => {
     if (clickSoundRef.current) {
       clickSoundRef.current.currentTime = 0;
@@ -804,6 +802,8 @@ export default function FloorComparisonPanel({
 
   const getFloorType = (floorNumber) => {
     const floor = parseInt(floorNumber);
+    if (floor === 0) return "ground";
+    if (floor === 21) return "terrace";
     if (floor === 1) return "1st";
     if (floor === 2 || floor === 9) return "2nd-9th";
     if (floor === 16) return "16th";
@@ -813,6 +813,11 @@ export default function FloorComparisonPanel({
     return "multiple";
   };
 
+  const hasBalconyViews = useCallback((floorNumber) => {
+    const floorType = getFloorType(floorNumber);
+    return getTotalBalconyPoints(floorType) > 0;
+  }, []);
+
   const isInBalconyViewMode = useCallback(() => {
     return (
       firstFloorViewMode === "balcony" || secondFloorViewMode === "balcony"
@@ -820,13 +825,14 @@ export default function FloorComparisonPanel({
   }, [firstFloorViewMode, secondFloorViewMode]);
 
   const handleFirstFloorRegionClick = (point) => {
+    if (!hasBalconyViews(firstFloor?.info?.floorNumber)) return;
     setFirstFloorSelectedPoint(point);
     setFirstFloorBalconyPoint(point);
     setFirstFloorViewMode("balcony");
     setFirstFloorZoom(1);
     setFirstFloorPan({ x: 0, y: 0 });
 
-    if (secondFloor) {
+    if (secondFloor && hasBalconyViews(secondFloor.info.floorNumber)) {
       const secondFloorType = getFloorType(secondFloor.info.floorNumber);
       const secondFloorTotalPoints = getTotalBalconyPoints(secondFloorType);
       const secondPoint = point <= secondFloorTotalPoints ? point : 1;
@@ -836,26 +842,27 @@ export default function FloorComparisonPanel({
       setSecondFloorZoom(1);
       setSecondFloorPan({ x: 0, y: 0 });
     }
-
     if ("vibrate" in navigator) navigator.vibrate(30);
   };
 
   const handleSecondFloorRegionClick = (point) => {
+    if (!hasBalconyViews(secondFloor?.info?.floorNumber)) return;
     setSecondFloorSelectedPoint(point);
     setSecondFloorBalconyPoint(point);
     setSecondFloorViewMode("balcony");
     setSecondFloorZoom(1);
     setSecondFloorPan({ x: 0, y: 0 });
 
-    const firstFloorType = getFloorType(firstFloor.info.floorNumber);
-    const firstFloorTotalPoints = getTotalBalconyPoints(firstFloorType);
-    const firstPoint = point <= firstFloorTotalPoints ? point : 1;
-    setFirstFloorSelectedPoint(firstPoint);
-    setFirstFloorBalconyPoint(firstPoint);
-    setFirstFloorViewMode("balcony");
-    setFirstFloorZoom(1);
-    setFirstFloorPan({ x: 0, y: 0 });
-
+    if (hasBalconyViews(firstFloor?.info?.floorNumber)) {
+      const firstFloorType = getFloorType(firstFloor.info.floorNumber);
+      const firstFloorTotalPoints = getTotalBalconyPoints(firstFloorType);
+      const firstPoint = point <= firstFloorTotalPoints ? point : 1;
+      setFirstFloorSelectedPoint(firstPoint);
+      setFirstFloorBalconyPoint(firstPoint);
+      setFirstFloorViewMode("balcony");
+      setFirstFloorZoom(1);
+      setFirstFloorPan({ x: 0, y: 0 });
+    }
     if ("vibrate" in navigator) navigator.vibrate(30);
   };
 
@@ -873,12 +880,11 @@ export default function FloorComparisonPanel({
       setSecondFloorZoom(1);
       setSecondFloorPan({ x: 0, y: 0 });
     }
-
     if ("vibrate" in navigator) navigator.vibrate(30);
   };
 
   const handleFirstFloorPlanToggle = () => {
-    playClickSound(); // ADD THIS LINE
+    playClickSound();
     const newValue = !firstFloorIsUnitPlan;
     setFirstFloorIsUnitPlan(newValue);
     setFirstFloorViewMode(newValue ? "unitplan" : "floorplan");
@@ -907,8 +913,7 @@ export default function FloorComparisonPanel({
 
   const getPanLimits = (zoom) => {
     const maxPanPercent = (zoom - 1) / zoom;
-    const maxPan = maxPanPercent * 2800;
-    return maxPan;
+    return maxPanPercent * 2800;
   };
 
   const clampPan = (pan, zoom) => {
@@ -943,20 +948,16 @@ export default function FloorComparisonPanel({
   };
 
   const handleMouseDown = (e, floorType) => {
-    if (floorType === "first") {
-      if (firstFloorZoom > 1) {
-        setIsDragging(true);
-        setActiveDragFloor(floorType);
-        setDragStart({ x: e.clientX, y: e.clientY });
-        e.preventDefault();
-      }
-    } else if (floorType === "second") {
-      if (secondFloorZoom > 1) {
-        setIsDragging(true);
-        setActiveDragFloor(floorType);
-        setDragStart({ x: e.clientX, y: e.clientY });
-        e.preventDefault();
-      }
+    if (floorType === "first" && firstFloorZoom > 1) {
+      setIsDragging(true);
+      setActiveDragFloor(floorType);
+      setDragStart({ x: e.clientX, y: e.clientY });
+      e.preventDefault();
+    } else if (floorType === "second" && secondFloorZoom > 1) {
+      setIsDragging(true);
+      setActiveDragFloor(floorType);
+      setDragStart({ x: e.clientX, y: e.clientY });
+      e.preventDefault();
     }
   };
 
@@ -973,7 +974,6 @@ export default function FloorComparisonPanel({
   const handleWheel = (e, floorType) => {
     e.preventDefault();
     const zoomDelta = e.deltaY > 0 ? -0.1 : 0.1;
-
     if (floorType === "first") {
       const newZoom = Math.max(0.5, Math.min(5, firstFloorZoom + zoomDelta));
       setFirstFloorZoom(newZoom);
@@ -996,25 +996,20 @@ export default function FloorComparisonPanel({
   const handleMouseMove = useCallback(
     (e) => {
       if (!isDragging || !activeDragFloor) return;
-
       const deltaX = e.clientX - dragStart.x;
       const deltaY = e.clientY - dragStart.y;
-
       if (activeDragFloor === "first") {
-        setFirstFloorPan((prev) => {
-          const newPan = { x: prev.x + deltaX, y: prev.y + deltaY };
-          return clampPan(newPan, firstFloorZoom);
-        });
+        setFirstFloorPan((prev) =>
+          clampPan({ x: prev.x + deltaX, y: prev.y + deltaY }, firstFloorZoom)
+        );
       } else if (activeDragFloor === "second") {
-        setSecondFloorPan((prev) => {
-          const newPan = { x: prev.x + deltaX, y: prev.y + deltaY };
-          return clampPan(newPan, secondFloorZoom);
-        });
+        setSecondFloorPan((prev) =>
+          clampPan({ x: prev.x + deltaX, y: prev.y + deltaY }, secondFloorZoom)
+        );
       }
-
       setDragStart({ x: e.clientX, y: e.clientY });
     },
-    [isDragging, activeDragFloor, dragStart, firstFloorZoom, secondFloorZoom],
+    [isDragging, activeDragFloor, dragStart, firstFloorZoom, secondFloorZoom]
   );
 
   const handleMouseUp = useCallback(() => {
@@ -1033,29 +1028,42 @@ export default function FloorComparisonPanel({
     }
   }, [isDragging, handleMouseMove, handleMouseUp]);
 
+  // FIXED: Use nullish coalescing (??) instead of || to handle floor 0 properly
   const extractFloorNumber = (floorData) => {
     if (!floorData) return null;
+    // Use ?? instead of || so that 0 is not treated as falsy
     return (
-      floorData.floor_number ||
-      floorData.floorNumber ||
-      floorData.info?.floorNumber ||
-      floorData.info?.floor_number ||
+      floorData.floor_number ??
+      floorData.floorNumber ??
+      floorData.info?.floorNumber ??
+      floorData.info?.floor_number ??
       null
     );
   };
 
   const getFloorPlanImage = useCallback((floorNumber, isUnitPlan = false) => {
+    // Handle null/undefined
+    if (floorNumber === null || floorNumber === undefined) {
+      return `/floors-images/multiple${isUnitPlan ? "_unit" : ""}.png`;
+    }
+    
     const floor = parseInt(floorNumber);
     const suffix = isUnitPlan ? "_unit" : "";
 
+    // Ground floor
+    if (floor === 0) {
+      return `/floors-images/ground${suffix}.png`;
+    }
+    // Terrace
+    if (floor === 21) {
+      return `/floors-images/terrace${suffix}.png`;
+    }
     if (floor === 1) {
       return `/floors-images/1st${suffix}.png`;
     }
-
     if (floor === 2 || floor === 9) {
       return `/floors-images/2ND-and-9TH${suffix}.png`;
     }
-
     if (floor === 16) {
       return `/floors-images/16th${suffix}.png`;
     }
@@ -1068,7 +1076,6 @@ export default function FloorComparisonPanel({
     if (floor === 20) {
       return `/floors-images/20th${suffix}.png`;
     }
-
     if (
       (floor >= 3 && floor <= 8) ||
       (floor >= 10 && floor <= 15) ||
@@ -1076,36 +1083,34 @@ export default function FloorComparisonPanel({
     ) {
       return `/floors-images/multiple${suffix}.png`;
     }
-
     return `/floors-images/multiple${suffix}.png`;
   }, []);
 
   const canCompareFloors = useCallback(
     (floorNumber1, floorNumber2) => {
-      if (!floorNumber1 || !floorNumber2) return true;
+      if (floorNumber1 === null || floorNumber1 === undefined) return true;
+      if (floorNumber2 === null || floorNumber2 === undefined) return true;
       return (
         getFloorPlanImage(floorNumber1) !== getFloorPlanImage(floorNumber2)
       );
     },
-    [getFloorPlanImage],
+    [getFloorPlanImage]
   );
 
   const isFloorSelectable = useCallback(
     (floor) => {
       if (!firstFloor) return true;
       if (isInBalconyViewMode()) return true;
-
       const firstFloorNumber = extractFloorNumber(firstFloor);
       const currentFloorNumber = floor.floor_number;
       return canCompareFloors(firstFloorNumber, currentFloorNumber);
     },
-    [firstFloor, canCompareFloors, isInBalconyViewMode],
+    [firstFloor, canCompareFloors, isInBalconyViewMode]
   );
 
   useEffect(() => {
     if (show && lockedFloor) {
       const floorNum = extractFloorNumber(lockedFloor);
-
       const floorWithCorrectNumber = {
         ...lockedFloor,
         info: {
@@ -1149,7 +1154,6 @@ export default function FloorComparisonPanel({
     if (show && panelRef.current && overlayRef.current) {
       gsap.set(overlayRef.current, { opacity: 0 });
       gsap.set(panelRef.current, { x: "100%" });
-
       const tl = gsap.timeline();
       tl.to(overlayRef.current, {
         opacity: 1,
@@ -1157,12 +1161,8 @@ export default function FloorComparisonPanel({
         ease: "power2.out",
       }).to(
         panelRef.current,
-        {
-          x: "0%",
-          duration: 0.6,
-          ease: "power3.out",
-        },
-        "-=0.15",
+        { x: "0%", duration: 0.6, ease: "power3.out" },
+        "-=0.15"
       );
     }
   }, [show]);
@@ -1175,22 +1175,20 @@ export default function FloorComparisonPanel({
     )
       return;
 
-    const tl = gsap.timeline({
-      defaults: { ease: "power3.inOut" },
-    });
+    const tl = gsap.timeline({ defaults: { ease: "power3.inOut" } });
 
     if (isRightPanelHidden) {
       tl.to(leftPanelRef.current, { width: "100%", duration: 0.5 }, 0)
         .to(
           rightPanelRef.current,
           { width: "0%", opacity: 0, padding: 0, duration: 0.5 },
-          0,
+          0
         )
         .to(toggleButtonRef.current, { right: "8px", duration: 0.5 }, 0)
         .to(
           toggleArrowRef.current,
           { rotation: 180, duration: 0.4, ease: "back.out(1.7)" },
-          0.1,
+          0.1
         )
         .to(contentWrapperRef.current, { padding: "16px", duration: 0.4 }, 0)
         .to(headerRef.current, { fontSize: "1.5rem", duration: 0.4 }, 0)
@@ -1200,17 +1198,17 @@ export default function FloorComparisonPanel({
         .to(
           rightPanelRef.current,
           { width: "33.333%", opacity: 1, padding: "24px", duration: 0.5 },
-          0,
+          0
         )
         .to(
           toggleButtonRef.current,
           { right: "calc(33.333% - 12px)", duration: 0.5 },
-          0,
+          0
         )
         .to(
           toggleArrowRef.current,
           { rotation: 0, duration: 0.4, ease: "back.out(1.7)" },
-          0.1,
+          0.1
         )
         .to(contentWrapperRef.current, { padding: "24px", duration: 0.4 }, 0)
         .to(headerRef.current, { fontSize: "1.875rem", duration: 0.4 }, 0)
@@ -1235,16 +1233,10 @@ export default function FloorComparisonPanel({
 
   const handleFloorToggle = useCallback(
     (floor) => {
-      if (firstFloor && floor.path_id === firstFloor.id) {
-        return;
-      }
-
-      if (!isFloorSelectable(floor)) {
-        return;
-      }
+      if (firstFloor && floor.path_id === firstFloor.id) return;
+      if (!isFloorSelectable(floor)) return;
 
       const floorNum = floor.floor_number;
-
       const floorData = {
         id: floor.path_id,
         d: floor.d,
@@ -1274,7 +1266,7 @@ export default function FloorComparisonPanel({
         setFirstFloorZoom(1);
         setFirstFloorPan({ x: 0, y: 0 });
 
-        if (currentlyInBalconyMode) {
+        if (currentlyInBalconyMode && hasBalconyViews(floorNum)) {
           const newFloorType = getFloorType(floorNum);
           const newFloorTotalPoints = getTotalBalconyPoints(newFloorType);
           const newPoint =
@@ -1291,7 +1283,6 @@ export default function FloorComparisonPanel({
         }
         setSecondFloorIsUnitPlan(firstFloorIsUnitPlan);
       }
-
       if ("vibrate" in navigator) navigator.vibrate(30);
     },
     [
@@ -1301,7 +1292,8 @@ export default function FloorComparisonPanel({
       isInBalconyViewMode,
       firstFloorIsUnitPlan,
       firstFloorBalconyPoint,
-    ],
+      hasBalconyViews,
+    ]
   );
 
   const getFloorFillColor = useCallback(
@@ -1334,7 +1326,7 @@ export default function FloorComparisonPanel({
       getClassColor,
       isFloorSelectable,
       isInBalconyViewMode,
-    ],
+    ]
   );
 
   const getFloorOpacity = useCallback(
@@ -1356,7 +1348,7 @@ export default function FloorComparisonPanel({
       hoveredFloor,
       isFloorSelectable,
       isInBalconyViewMode,
-    ],
+    ]
   );
 
   const handleClose = () => {
@@ -1369,7 +1361,7 @@ export default function FloorComparisonPanel({
       }).to(
         overlayRef.current,
         { opacity: 0, duration: 0.25, ease: "power2.in" },
-        "-=0.2",
+        "-=0.2"
       );
     } else {
       onClose();
@@ -1382,14 +1374,20 @@ export default function FloorComparisonPanel({
   const hasSecondFloor = !!secondFloor;
   const hasBothFloors = hasFirstFloor && hasSecondFloor;
 
+  const firstFloorNumber = hasFirstFloor ? firstFloor.info.floorNumber : null;
+  const secondFloorNumber = hasSecondFloor ? secondFloor.info.floorNumber : null;
+
   const firstFloorType = hasFirstFloor
-    ? getFloorType(firstFloor.info.floorNumber)
+    ? getFloorType(firstFloorNumber)
     : "multiple";
   const secondFloorType = hasSecondFloor
-    ? getFloorType(secondFloor.info.floorNumber)
+    ? getFloorType(secondFloorNumber)
     : "multiple";
   const firstFloorTotalPoints = getTotalBalconyPoints(firstFloorType);
   const secondFloorTotalPoints = getTotalBalconyPoints(secondFloorType);
+
+  const firstFloorHasBalcony = hasFirstFloor && firstFloorTotalPoints > 0;
+  const secondFloorHasBalcony = hasSecondFloor && secondFloorTotalPoints > 0;
 
   return createPortal(
     <div
@@ -1400,7 +1398,7 @@ export default function FloorComparisonPanel({
         ref={panelRef}
         className="bg-[#FFFBF5] w-full h-full overflow-hidden flex"
       >
-        {/* Close Button - RESPONSIVE */}
+        {/* Close Button */}
         <button
           onClick={handleClose}
           className={`absolute top-2 sm:top-4 z-20 w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center bg-black/50 hover:bg-black/70 rounded-full transition-all duration-500 cursor-pointer ${
@@ -1422,7 +1420,7 @@ export default function FloorComparisonPanel({
           </svg>
         </button>
 
-        {/* Left Panel - Floor Plan Comparison */}
+        {/* Left Panel */}
         <div
           ref={leftPanelRef}
           className="bg-white uppercase font-futura-bk overflow-y-auto left-panel"
@@ -1433,27 +1431,27 @@ export default function FloorComparisonPanel({
             className="h-full flex flex-col p-2 sm:p-4 md:p-6"
             style={{ padding: "24px" }}
           >
-            {/* Header - RESPONSIVE */}
+            {/* Header */}
             <div className="flex items-center justify-between mb-2 sm:mb-4 flex-shrink-0">
               <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
                 <h3
                   ref={headerRef}
-                  className=" text-[#000000] text-sm sm:text-xl md:text-3xl"
+                  className="text-[#000000] text-sm sm:text-xl md:text-3xl"
                   style={{ fontSize: "1.875rem" }}
                 >
                   {hasBothFloors ? (
                     <>
                       <span className="hidden sm:inline">
-                        Comparing Floor {firstFloor?.info.floorNumber} to{" "}
-                        {secondFloor?.info.floorNumber}
+                        Comparing Floor {getFloorDisplayName(firstFloorNumber)}{" "}
+                        to {getFloorDisplayName(secondFloorNumber)}
                       </span>
                       <span className="sm:hidden">
-                        Floor {firstFloor?.info.floorNumber} vs{" "}
-                        {secondFloor?.info.floorNumber}
+                        Floor {getFloorDisplayName(firstFloorNumber)} vs{" "}
+                        {getFloorDisplayName(secondFloorNumber)}
                       </span>
                     </>
                   ) : hasFirstFloor ? (
-                    <>Floor {firstFloor?.info.floorNumber}</>
+                    <>Floor {getFloorDisplayName(firstFloorNumber)}</>
                   ) : (
                     <>Floor Plan Comparison</>
                   )}
@@ -1500,7 +1498,6 @@ export default function FloorComparisonPanel({
                         "0 8px 30px -5px rgba(193, 154, 64, 0.4), 0 4px 15px -3px rgba(0, 0, 0, 0.1)",
                     }}
                   >
-                    {/* Zoom Controls - RESPONSIVE: bottom-right on mobile, top-right on desktop */}
                     {firstFloorViewMode !== "balcony" && (
                       <div className="absolute bottom-2 right-2 sm:top-3 sm:right-3 sm:bottom-auto z-20 flex flex-row sm:flex-col gap-1 sm:gap-2">
                         <button
@@ -1528,7 +1525,7 @@ export default function FloorComparisonPanel({
                               setFirstFloorZoom,
                               setFirstFloorPan,
                               firstFloorZoom,
-                              firstFloorPan,
+                              firstFloorPan
                             )
                           }
                           className="w-6 h-6 sm:w-8 sm:h-8 bg-white hover:bg-gray-100 rounded-full shadow-md cursor-pointer flex items-center justify-center text-gray-600 hover:text-gray-800 transition-colors"
@@ -1571,13 +1568,11 @@ export default function FloorComparisonPanel({
                         </button>
                       </div>
                     )}
-                    {/* Zoom indicator - RESPONSIVE */}
                     {firstFloorViewMode !== "balcony" && (
                       <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 z-20 bg-white/80 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded text-[10px] sm:text-xs text-gray-600">
                         {Math.round(firstFloorZoom * 100)}%
                       </div>
                     )}
-                    {/* View mode indicator - RESPONSIVE */}
                     <div className="absolute top-1.5 left-1.5 sm:top-3 sm:left-3 z-20 bg-[#C19A40] text-white px-1.5 py-0.5 sm:px-2 sm:py-1 rounded text-[9px] sm:text-xs hidden lg:block">
                       {firstFloorViewMode === "balcony"
                         ? `Balcony - Pt ${firstFloorBalconyPoint}`
@@ -1618,12 +1613,12 @@ export default function FloorComparisonPanel({
                         >
                           {firstFloorViewMode === "balcony" ? (
                             <BalconyViewCarousel
-                              floorNumber={firstFloor.info.floorNumber}
+                              floorNumber={firstFloorNumber}
                               currentPoint={firstFloorBalconyPoint}
                               onPointChange={(point) => {
                                 setFirstFloorBalconyPoint(point);
                                 setFirstFloorSelectedPoint(point);
-                                if (secondFloor) {
+                                if (secondFloor && secondFloorHasBalcony) {
                                   setSecondFloorBalconyPoint(point);
                                   setSecondFloorSelectedPoint(point);
                                 }
@@ -1647,10 +1642,12 @@ export default function FloorComparisonPanel({
                             >
                               <img
                                 src={getFloorPlanImage(
-                                  firstFloor.info.floorNumber,
-                                  firstFloorIsUnitPlan,
+                                  firstFloorNumber,
+                                  firstFloorIsUnitPlan
                                 )}
-                                alt={`Floor ${firstFloor.info.floorNumber} ${
+                                alt={`Floor ${getFloorDisplayName(
+                                  firstFloorNumber
+                                )} ${
                                   firstFloorIsUnitPlan ? "Unit" : "Floor"
                                 } Plan`}
                                 className="block select-none"
@@ -1663,7 +1660,7 @@ export default function FloorComparisonPanel({
                                 }}
                                 draggable={false}
                               />
-                              {firstFloorIsUnitPlan && (
+                              {firstFloorIsUnitPlan && firstFloorHasBalcony && (
                                 <UnitPlanOverlay
                                   floorType={firstFloorType}
                                   onRegionClick={handleFirstFloorRegionClick}
@@ -1677,7 +1674,7 @@ export default function FloorComparisonPanel({
                     </div>
                   </div>
 
-                  {/* Second Floor (if selected) */}
+                  {/* Second Floor */}
                   {hasSecondFloor && (
                     <div
                       className="bg-white rounded-lg relative overflow-hidden flex flex-col border-2"
@@ -1714,7 +1711,7 @@ export default function FloorComparisonPanel({
                                 setSecondFloorZoom,
                                 setSecondFloorPan,
                                 secondFloorZoom,
-                                secondFloorPan,
+                                secondFloorPan
                               )
                             }
                             className="w-6 h-6 sm:w-8 sm:h-8 bg-white hover:bg-gray-100 rounded-full shadow-md cursor-pointer flex items-center justify-center text-gray-600 hover:text-gray-800 transition-colors"
@@ -1762,7 +1759,7 @@ export default function FloorComparisonPanel({
                           {Math.round(secondFloorZoom * 100)}%
                         </div>
                       )}
-                      <div className="absolute top-1.5 left-1.5 sm:top-3 sm:left-3 z-20 bg-[#BDD1B1] text-gray-800 px-1.5 py-0.5 hidden sm:px-2 sm:py-1 rounded text-[9px] sm:text-xs lg:block ">
+                      <div className="absolute top-1.5 left-1.5 sm:top-3 sm:left-3 z-20 bg-[#BDD1B1] text-gray-800 px-1.5 py-0.5 hidden sm:px-2 sm:py-1 rounded text-[9px] sm:text-xs lg:block">
                         {secondFloorViewMode === "balcony"
                           ? `Balcony - Pt ${secondFloorBalconyPoint}`
                           : secondFloorIsUnitPlan
@@ -1802,7 +1799,7 @@ export default function FloorComparisonPanel({
                           >
                             {secondFloorViewMode === "balcony" ? (
                               <BalconyViewCarousel
-                                floorNumber={secondFloor.info.floorNumber}
+                                floorNumber={secondFloorNumber}
                                 currentPoint={firstFloorBalconyPoint}
                                 onPointChange={() => {}}
                                 totalPoints={secondFloorTotalPoints}
@@ -1826,10 +1823,12 @@ export default function FloorComparisonPanel({
                               >
                                 <img
                                   src={getFloorPlanImage(
-                                    secondFloor.info.floorNumber,
-                                    secondFloorIsUnitPlan,
+                                    secondFloorNumber,
+                                    secondFloorIsUnitPlan
                                   )}
-                                  alt={`Floor ${secondFloor.info.floorNumber} ${
+                                  alt={`Floor ${getFloorDisplayName(
+                                    secondFloorNumber
+                                  )} ${
                                     secondFloorIsUnitPlan ? "Unit" : "Floor"
                                   } Plan`}
                                   className="block select-none"
@@ -1842,13 +1841,16 @@ export default function FloorComparisonPanel({
                                   }}
                                   draggable={false}
                                 />
-                                {secondFloorIsUnitPlan && (
-                                  <UnitPlanOverlay
-                                    floorType={secondFloorType}
-                                    onRegionClick={handleSecondFloorRegionClick}
-                                    selectedPoint={secondFloorSelectedPoint}
-                                  />
-                                )}
+                                {secondFloorIsUnitPlan &&
+                                  secondFloorHasBalcony && (
+                                    <UnitPlanOverlay
+                                      floorType={secondFloorType}
+                                      onRegionClick={
+                                        handleSecondFloorRegionClick
+                                      }
+                                      selectedPoint={secondFloorSelectedPoint}
+                                    />
+                                  )}
                               </div>
                             )}
                           </div>
@@ -1877,7 +1879,7 @@ export default function FloorComparisonPanel({
           </div>
         </div>
 
-        {/* Toggle Button for Right Panel - RESPONSIVE */}
+        {/* Toggle Button */}
         <button
           ref={toggleButtonRef}
           onClick={() => setIsRightPanelHidden(!isRightPanelHidden)}
@@ -1903,7 +1905,7 @@ export default function FloorComparisonPanel({
           </svg>
         </button>
 
-        {/* Right Panel - Building SVG */}
+        {/* Right Panel */}
         <div
           ref={rightPanelRef}
           className="flex flex-col right-panel overflow-visible p-2 sm:p-4 md:p-6"
@@ -1941,7 +1943,60 @@ export default function FloorComparisonPanel({
                 <g
                   style={{ transform: "translate(2050px, -10px) scale(0.85)" }}
                 >
-                  {floors.map((floor) => {
+                  {floors
+                    .filter((floor) => !floor.customTransform)
+                    .map((floor) => {
+                      const isHovered = hoveredFloor === floor.path_id;
+                      const isFirstFloorPath =
+                        firstFloor && firstFloor.id === floor.path_id;
+                      const isSecondFloorPath =
+                        secondFloor && secondFloor.id === floor.path_id;
+                      const selectable = isFloorSelectable(floor);
+                      const canInteract = selectable || isFirstFloorPath;
+
+                      return (
+                        <path
+                          key={floor.path_id}
+                          id={floor.path_id}
+                          d={floor.d}
+                          fill={getFloorFillColor(floor)}
+                          stroke={
+                            (isHovered && canInteract) ||
+                            isSecondFloorPath ||
+                            isFirstFloorPath
+                              ? "#ffffff"
+                              : "none"
+                          }
+                          strokeWidth={
+                            (isHovered && canInteract) ||
+                            isSecondFloorPath ||
+                            isFirstFloorPath
+                              ? "3"
+                              : "0"
+                          }
+                          opacity={getFloorOpacity(floor)}
+                          style={{
+                            cursor: canInteract ? "pointer" : "not-allowed",
+                            transition:
+                              "opacity 150ms ease-out, fill 150ms ease-out, stroke 150ms ease-out",
+                            filter:
+                              isHovered && canInteract
+                                ? "brightness(1.1)"
+                                : "none",
+                          }}
+                          onMouseEnter={() =>
+                            canInteract && setHoveredFloor(floor.path_id)
+                          }
+                          onMouseLeave={() => setHoveredFloor(null)}
+                          onClick={() => handleFloorToggle(floor)}
+                        />
+                      );
+                    })}
+                </g>
+                {/* Floors with custom transforms - with adjusted stroke width */}
+                {floors
+                  .filter((floor) => floor.customTransform)
+                  .map((floor) => {
                     const isHovered = hoveredFloor === floor.path_id;
                     const isFirstFloorPath =
                       firstFloor && firstFloor.id === floor.path_id;
@@ -1949,51 +2004,63 @@ export default function FloorComparisonPanel({
                       secondFloor && secondFloor.id === floor.path_id;
                     const selectable = isFloorSelectable(floor);
                     const canInteract = selectable || isFirstFloorPath;
+                    const { translateX, translateY, scale } =
+                      floor.customTransform;
+                    
+                    // Calculate proportional stroke width for custom transform floors
+                    // Regular floors have scale 0.85 with stroke 3
+                    // Custom floors need proportionally smaller stroke to look the same
+                    const adjustedStrokeWidth = getCustomTransformStrokeWidth(scale);
 
                     return (
-                      <path
+                      <g
                         key={floor.path_id}
-                        id={floor.path_id}
-                        d={floor.d}
-                        fill={getFloorFillColor(floor)}
-                        stroke={
-                          (isHovered && canInteract) ||
-                          isSecondFloorPath ||
-                          isFirstFloorPath
-                            ? "#ffffff"
-                            : "none"
-                        }
-                        strokeWidth={
-                          (isHovered && canInteract) ||
-                          isSecondFloorPath ||
-                          isFirstFloorPath
-                            ? "3"
-                            : "0"
-                        }
-                        opacity={getFloorOpacity(floor)}
                         style={{
-                          cursor: canInteract ? "pointer" : "not-allowed",
-                          transition:
-                            "opacity 150ms ease-out, fill 150ms ease-out, stroke 150ms ease-out",
-                          filter:
-                            isHovered && canInteract
-                              ? "brightness(1.1)"
-                              : "none",
+                          transform: `translate(${translateX}px, ${translateY}px) scale(${scale})`,
                         }}
-                        onMouseEnter={() =>
-                          canInteract && setHoveredFloor(floor.path_id)
-                        }
-                        onMouseLeave={() => setHoveredFloor(null)}
-                        onClick={() => handleFloorToggle(floor)}
-                      />
+                      >
+                        <path
+                          id={floor.path_id}
+                          d={floor.d}
+                          fill={getFloorFillColor(floor)}
+                          stroke={
+                            (isHovered && canInteract) ||
+                            isSecondFloorPath ||
+                            isFirstFloorPath
+                              ? "#ffffff"
+                              : "none"
+                          }
+                          strokeWidth={
+                            (isHovered && canInteract) ||
+                            isSecondFloorPath ||
+                            isFirstFloorPath
+                              ? adjustedStrokeWidth
+                              : "0"
+                          }
+                          opacity={getFloorOpacity(floor)}
+                          style={{
+                            cursor: canInteract ? "pointer" : "not-allowed",
+                            transition:
+                              "opacity 150ms ease-out, fill 150ms ease-out, stroke 150ms ease-out",
+                            filter:
+                              isHovered && canInteract
+                                ? "brightness(1.1)"
+                                : "none",
+                          }}
+                          onMouseEnter={() =>
+                            canInteract && setHoveredFloor(floor.path_id)
+                          }
+                          onMouseLeave={() => setHoveredFloor(null)}
+                          onClick={() => handleFloorToggle(floor)}
+                        />
+                      </g>
                     );
                   })}
-                </g>
               </svg>
             </div>
           </div>
 
-          {/* Unit Plan Thumbnail - RESPONSIVE label */}
+          {/* Unit Plan Thumbnail */}
           <div
             className="h-2/5 mt-2 sm:mt-4 rounded-lg overflow-hidden bg-white border-2 flex items-center justify-center"
             style={{
@@ -2005,37 +2072,53 @@ export default function FloorComparisonPanel({
           >
             {(firstFloorViewMode === "balcony" ||
               secondFloorViewMode === "balcony") &&
-            hasFirstFloor ? (
+            hasFirstFloor &&
+            firstFloorHasBalcony ? (
               <div
                 className="relative w-full h-full cursor-pointer group flex items-center justify-center p-2 sm:p-4"
                 onClick={handleUnitPlanThumbnailClick}
               >
-                {/* Aspect-ratio locked wrapper - keeps radar position consistent */}
                 <div
                   className="relative max-w-full max-h-full"
                   style={{ aspectRatio: "4 / 3" }}
                 >
                   <img
-                    src={getFloorPlanImage(firstFloor.info.floorNumber, true)}
+                    src={getFloorPlanImage(firstFloorNumber, true)}
                     alt="Unit Plan"
                     className="w-full h-full object-contain"
                   />
-                  {/* Radar now positioned relative to this aspect-ratio locked container */}
                   <RadarViewIndicator
                     currentPoint={firstFloorBalconyPoint}
                     floorType={firstFloorType}
                     className="drop-shadow-lg"
                   />
                 </div>
-                {/* Hover overlay */}
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center pointer-events-none">
-                  <span className="text-white text-[10px] sm:text-sm  bg-black/50 px-2 py-1 sm:px-3 sm:py-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="text-white text-[10px] sm:text-sm bg-black/50 px-2 py-1 sm:px-3 sm:py-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">
                     Click to view Unit Plan
                   </span>
                 </div>
-                {/* Label */}
                 <div className="absolute bottom-1 sm:bottom-2 left-1/2 -translate-x-1/2 bg-[#C19A40] text-white px-1.5 py-0.5 sm:px-3 sm:py-1 rounded text-[8px] sm:text-xs whitespace-nowrap hidden lg:block">
-                  Unit Plan - Floor {firstFloor.info.floorNumber}
+                  Unit Plan - Floor {getFloorDisplayName(firstFloorNumber)}
+                </div>
+              </div>
+            ) : hasFirstFloor && !firstFloorHasBalcony ? (
+              <div className="relative w-full h-full flex items-center justify-center p-2 sm:p-4">
+                <div
+                  className="relative max-w-full max-h-full"
+                  style={{ aspectRatio: "4 / 3" }}
+                >
+                  <img
+                    src={getFloorPlanImage(firstFloorNumber, true)}
+                    alt="Unit Plan"
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <div className="absolute bottom-1 sm:bottom-2 left-1/2 -translate-x-1/2 bg-[#C19A40] text-white px-1.5 py-0.5 sm:px-3 sm:py-1 rounded text-[8px] sm:text-xs whitespace-nowrap hidden lg:block">
+                  Unit Plan - Floor {getFloorDisplayName(firstFloorNumber)}
+                </div>
+                <div className="absolute top-1 sm:top-2 right-1 sm:right-2 bg-gray-500 text-white px-1.5 py-0.5 sm:px-2 sm:py-1 rounded text-[8px] sm:text-xs hidden lg:block">
+                  No Balcony Views
                 </div>
               </div>
             ) : (
@@ -2062,6 +2145,6 @@ export default function FloorComparisonPanel({
         </div>
       </div>
     </div>,
-    document.body,
+    document.body
   );
 }

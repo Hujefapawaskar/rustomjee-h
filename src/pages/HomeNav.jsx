@@ -43,8 +43,8 @@ const HomeNav = () => {
         />
 
         {/* Navigation Bar - Bottom */}
-        <div className="absolute bottom-5 max-md:bottom-2 max-lg:bottom-2 left-0 w-full 4xl:bottom-20 px-10 z-50" >
-          <NavigationBar className="3xl:scale-150 4xl:scale-250 opacity-100" />
+        <div className="absolute bottom-5 max-md:bottom-2 max-lg:bottom-2 left-0 w-full 4xl:bottom-20 px-10 z-50">
+          <NavigationBar className="3xl:scale-100 4xl:scale-250 opacity-100" />
         </div>
       </div>
     </>
