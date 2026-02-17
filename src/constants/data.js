@@ -338,6 +338,7 @@ export const slidesData = [
     src: "/video/5.mp4",
     category: "exterior",
     title: "The Tower",
+    fitMode: "contain",
   },
   // {
   //   id: 23,

@@ -14,14 +14,14 @@ gsap.registerPlugin(useGSAP, CustomEase);
 // Create custom ease outside component (runs once)
 CustomEase.create(
   "hop",
-  "M0,0 C0.083,0.294 0.117,0.767 0.413,0.908 0.606,1 0.752,1 1,1 "
+  "M0,0 C0.083,0.294 0.117,0.767 0.413,0.908 0.606,1 0.752,1 1,1 ",
 );
 
 // Helper function to check if a source is a video
 const isVideo = (src) => {
   if (!src) return false;
-  const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov'];
-  return videoExtensions.some(ext => src.toLowerCase().endsWith(ext));
+  const videoExtensions = [".mp4", ".webm", ".ogg", ".mov"];
+  return videoExtensions.some((ext) => src.toLowerCase().endsWith(ext));
 };
 
 export default function StorySlider({
@@ -135,7 +135,9 @@ export default function StorySlider({
         slideElements = slider.querySelectorAll(".slide");
 
         // Check if we're at the last slide (prevent looping forward)
-        const currentIdx = parseInt(slideElements[0].getAttribute("data-slide-index"));
+        const currentIdx = parseInt(
+          slideElements[0].getAttribute("data-slide-index"),
+        );
         if (currentIdx >= slides.length - 1) return;
 
         animatingRef.current = true;
@@ -146,7 +148,7 @@ export default function StorySlider({
         if (slideElements.length > 1) {
           const nextCategory = secondSlide.getAttribute("data-category");
           const nextSlideIndex = parseInt(
-            secondSlide.getAttribute("data-slide-index")
+            secondSlide.getAttribute("data-slide-index"),
           );
 
           setCurrentCategory(nextCategory);
@@ -220,7 +222,7 @@ export default function StorySlider({
         if (slideElements.length > 1) {
           const prevCategory = lastSlide.getAttribute("data-category");
           const prevSlideIndex = parseInt(
-            lastSlide.getAttribute("data-slide-index")
+            lastSlide.getAttribute("data-slide-index"),
           );
 
           setCurrentCategory(prevCategory);
@@ -316,7 +318,7 @@ export default function StorySlider({
         delete window.handleSliderPrev;
       };
     },
-    { scope: containerRef, dependencies: [currentSlideIndex] }
+    { scope: containerRef, dependencies: [currentSlideIndex] },
   );
   const handleTouchStart = (e) => {
     touchStartY.current = e.touches[0].clientY;
@@ -359,14 +361,14 @@ export default function StorySlider({
     const slideElements = Array.from(slider.querySelectorAll(".slide"));
 
     const targetIndex = slideElements.findIndex(
-      (slide) => slide.getAttribute("data-category") === category
+      (slide) => slide.getAttribute("data-category") === category,
     );
 
     if (targetIndex === -1 || targetIndex === 0) return;
 
     const targetSlide = slideElements[targetIndex];
     const targetSlideIndex = parseInt(
-      targetSlide.getAttribute("data-slide-index")
+      targetSlide.getAttribute("data-slide-index"),
     );
 
     setCurrentCategory(category);
@@ -475,7 +477,7 @@ export default function StorySlider({
             muted
             playsInline
             preload="auto"
-            className="w-full h-full object-cover"
+            className={`w-full h-full ${slide.fitMode === "contain" ? "object-contain" : "object-cover"}`}
             style={{
               pointerEvents: "none",
               userSelect: "none",
