@@ -273,7 +273,7 @@ function DocumentViewer({
       }}
     >
       {/* Blurred background */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-md" />
+      <div className="absolute inset-0 bg-[rgb(5,40,70)] backdrop-blur-md" />
 
       {/* Close Button */}
       <button

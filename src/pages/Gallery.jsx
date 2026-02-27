@@ -449,7 +449,7 @@ export default function StorySlider({
             {/* Click to Transition Indicator - Only for shader images */}
             <div className="absolute bottom-24 sm:bottom-36 left-1/2 -translate-x-1/2 z-40 pointer-events-none">
               <div className="flex flex-col items-center gap-4 animate-pulse px-6 py-4 rounded-full">
-                <svg
+                {/* <svg
                   className="w-10 h-10 sm:w-12 sm:h-12 text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]"
                   fill="none"
                   stroke="currentColor"
@@ -461,10 +461,10 @@ export default function StorySlider({
                     strokeWidth={2}
                     d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"
                   />
-                </svg>
-                <span className="text-white text-base sm:text-lg lg:text-xl tracking-widest uppercase font-semibold font-futura-medium drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]">
+                </svg> */}
+                {/* <span className="text-white text-base sm:text-lg lg:text-xl tracking-widest uppercase font-semibold font-futura-medium drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]">
                   Click to reveal
-                </span>
+                </span> */}
               </div>
             </div>
           </>

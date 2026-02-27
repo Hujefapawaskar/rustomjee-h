@@ -414,7 +414,7 @@ const ThreeArchitectsSlide = ({ data }) => {
                     className="w-full h-full object-cover object-[50%_0%] text-element transition-all duration-700 ease-out"
                     alt={architect.name}
                   />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-500" />
+                  <div className="absolute inset-0 bg-black/0  transition-all duration-500" />
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
                 </div>
 
