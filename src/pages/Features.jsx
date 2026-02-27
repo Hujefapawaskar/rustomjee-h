@@ -288,7 +288,7 @@ const SplitBackgroundSlide = ({ data }) => {
           >
             <img
               src={data.leftSection.imageSrc}
-              className="w-full h-full object-cover object-[50%_30%] text-element transition-all duration-700 ease-out group-hover:scale-105"
+              className="w-full h-full object-cover object-[50%_30%] text-element transition-all duration-700 ease-out"
               alt=""
             />
             {/* Subtle shine effect on hover */}
@@ -411,7 +411,7 @@ const ThreeArchitectsSlide = ({ data }) => {
                 <div className="w-full h-28 sm:h-32 md:h-40 lg:h-48 xl:h-60 2xl:h-110 3xl:h-[30rem] 4xl:h-[40rem] overflow-hidden relative flex-shrink-0">
                   <img
                     src={architect.src}
-                    className="w-full h-full object-cover object-[50%_0%] text-element transition-all duration-700 ease-out group-hover:scale-105"
+                    className="w-full h-full object-cover object-[50%_0%] text-element transition-all duration-700 ease-out"
                     alt={architect.name}
                   />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-500" />
@@ -541,7 +541,7 @@ const ArchitectIndividualSlide = ({ data }) => {
               <img
                 ref={imageRef}
                 src={data.imageSrc}
-                className="w-full h-auto object-cover text-element transition-all duration-700 ease-out group-hover:scale-105"
+                className="w-full h-auto object-cover text-element transition-all duration-700 ease-out"
                 alt=""
               />
               <div className="absolute inset-0 bg-black/0 transition-all duration-500" />
@@ -621,7 +621,7 @@ const ArchitectIndividualSlide = ({ data }) => {
               <img
                 ref={imageRef}
                 src={data.imageSrc}
-                className="w-full h-auto object-cover object-[20%_0%] text-element transition-all duration-700 ease-out group-hover:scale-105"
+                className="w-full h-auto object-cover object-[20%_0%] text-element transition-all duration-700 ease-out"
                 alt=""
               />
               <div className="absolute inset-0 bg-black/0 transition-all duration-500" />
@@ -685,7 +685,7 @@ const BuildingShowcaseSlide = ({ data }) => {
           <img
             ref={imageRef}
             src={data.buildingImageSrc}
-            className="w-full h-auto object-cover object-[80%_50%] text-element transition-all duration-700 ease-out group-hover:scale-105"
+            className="w-full h-auto object-cover object-[80%_50%] text-element transition-all duration-700 ease-out"
             alt=""
           />
           <div className="absolute inset-0 bg-black/0  transition-all duration-500" />
@@ -728,7 +728,7 @@ const BuildingElementsSlide = ({ data }) => {
               <div className="overflow-hidden relative flex-shrink-0 w-9 h-7 sm:w-10 sm:h-8 md:w-12 md:h-10 lg:w-16 lg:h-12 xl:w-20 xl:h-16 2xl:w-28 2xl:h-24 3xl:w-36 3xl:h-28 4xl:w-48 4xl:h-40">
                 <img
                   src={element.src}
-                  className="w-full h-full object-cover text-element transition-all duration-500 ease-out group-hover:scale-110 group-hover:brightness-110"
+                  className="w-full h-full object-cover text-element transition-all duration-500 ease-out  group-hover:brightness-110"
                   alt=""
                 />
               </div>
@@ -749,7 +749,7 @@ const BuildingElementsSlide = ({ data }) => {
         <div className="w-[47%] sm:w-[47%] md:w-[47%] lg:w-[48%] xl:w-[49%] 2xl:w-[47%] 3xl:w-[47%] 4xl:w-[47%] h-full flex items-center justify-center p-1 sm:p-1.5 md:p-2 lg:p-3 xl:p-5 2xl:p-8 3xl:p-10 4xl:p-14 overflow-hidden group cursor-pointer relative">
           <img
             src={data.mainImageSrc}
-            className="h-[88%] sm:h-[89%] md:h-[89%] lg:h-[90%] xl:h-[90%] 2xl:h-[90%] object-contain text-element transition-all duration-700 ease-out group-hover:scale-105 absolute left-[12%] sm:left-[14%] md:left-[16%] lg:left-[18%] xl:left-[20%] 2xl:left-30 3xl:left-40 4xl:left-52 -bottom-3 sm:-bottom-4 md:-bottom-5 lg:-bottom-5 xl:-bottom-6 2xl:-bottom-7 3xl:-bottom-9 4xl:-bottom-12"
+            className="h-[88%] sm:h-[89%] md:h-[89%] lg:h-[90%] xl:h-[90%] 2xl:h-[90%] object-contain text-element transition-all duration-700 ease-out absolute left-[12%] sm:left-[14%] md:left-[16%] lg:left-[18%] xl:left-[20%] 2xl:left-30 3xl:left-40 4xl:left-52 -bottom-3 sm:-bottom-4 md:-bottom-5 lg:-bottom-5 xl:-bottom-6 2xl:-bottom-7 3xl:-bottom-9 4xl:-bottom-12"
             alt=""
           />
         </div>
@@ -866,7 +866,7 @@ const MapSlide = ({ data }) => {
           <img
             ref={mapImageRef}
             src={data.mapImageSrc}
-            className="w-full h-full object-cover text-element transition-all duration-700 ease-out group-hover:scale-105 absolute right-0 pl-13 xl:object-[0%]"
+            className="w-full h-full object-cover text-element transition-all duration-700 ease-out absolute right-0 pl-13 xl:object-[0%]"
             alt=""
           />
         </div>
@@ -961,7 +961,7 @@ const PortfolioSlide = ({ data }) => {
                 <img
                   ref={index === 0 ? imagesContainerRef : null}
                   src={building.src}
-                  className="w-full h-[65%] object-cover text-element transition-all duration-700 ease-out group-hover:scale-105"
+                  className="w-full h-[65%] object-cover text-element transition-all duration-700 ease-out"
                   style={{
                     objectPosition: building.objectPosition || "50% 50%",
                   }}
