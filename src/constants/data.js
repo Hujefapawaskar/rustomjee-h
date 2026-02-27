@@ -198,12 +198,14 @@ export const slidesData = [
     src: "/video/1.mp4",
     category: "exterior",
     title: "Quiet Approach",
+    fitMode: "contain",
   },
   {
     id: 22,
     src: "/video/2.mp4",
     category: "exterior",
     title: "Marquee Entry",
+    fitMode: "contain",
   },
   {
     id: 18,
@@ -216,6 +218,7 @@ export const slidesData = [
     src: "/video/3.mp4",
     category: "amenities",
     title: "Private Drive",
+    fitMode: "contain",
   },
   {
     id: 8,
@@ -264,6 +267,7 @@ export const slidesData = [
     src: "/video/11.mp4",
     category: "apartment",
     title: "Ocean Side Living",
+    fitMode: "contain",
   },
   {
     id: 16,
@@ -288,6 +292,7 @@ export const slidesData = [
     src: "/video/7.mp4",
     category: "amenities",
     title: "Infinity Edge",
+    fitMode: "contain",
   },
   {
     id: 17,
@@ -307,6 +312,7 @@ export const slidesData = [
     src: "/video/8.mp4",
     category: "apartment",
     title: "Club Lounge",
+    fitMode: "contain",
   },
   // {
   //   id: 13,
@@ -332,6 +338,7 @@ export const slidesData = [
     src: "/video/6.mp4",
     category: "exterior",
     title: "The Tower",
+    fitMode: "contain",
   },
   {
     id: 23,
