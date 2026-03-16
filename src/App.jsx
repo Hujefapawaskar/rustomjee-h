@@ -13,14 +13,6 @@ import Views from "./components/Views";
 import VideoPlayer from "./pages/VideoPlayer";
 import Documents from "./pages/Documents";
 
-const GlobalLogo = () => (
-  <img
-    src="/images/Brainwing-logo.webp"
-    alt="Logo"
-    className="fixed bottom-7 right-20 w-40 h-auto opacity-50 z-[9999] pointer-events-none"
-  />
-);
-
 const AppContent = () => {
   const location = useLocation();
   const isVideoPage = location.pathname === "/videoplayer";
@@ -28,7 +20,6 @@ const AppContent = () => {
   return (
     <>
       <MusicController play={!isVideoPage} />
-      <GlobalLogo />
       <ScrollToTop />
       <BackButtonHandler />
       <Routes>

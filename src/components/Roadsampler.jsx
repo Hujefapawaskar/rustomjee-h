@@ -137,7 +137,6 @@ export function RoadClickSampler({ nodes, roadNames = [] }) {
       scene.add(marker);
       markers.current.push(marker);
 
-      console.log("Sampled:", [p.x, p.y, p.z]);
     };
 
     const canvas = gl.domElement;

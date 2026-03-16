@@ -15,9 +15,7 @@ const MusicController = ({ play }) => {
 
     if (play) {
       audioRef.current.volume = 0.6;
-      audioRef.current.play().catch(() => {
-        console.log("User gesture required to play audio");
-      });
+      audioRef.current.play().catch(() => {});
     } else {
       audioRef.current.pause();
     }

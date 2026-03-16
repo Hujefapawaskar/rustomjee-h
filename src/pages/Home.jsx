@@ -155,10 +155,6 @@ const Home = () => {
         onComplete: () => {
           document.body.style.overflow = "auto";
           setScrollEnabled(true);
-           // Refresh ScrollTrigger after intro completes
-          //  setTimeout(() => {
-          //   ScrollTrigger.refresh(true);
-          // }, 100);
         },
       });
 
@@ -247,8 +243,8 @@ const Home = () => {
       .to(bottomLogo.current, {
         yPercent: -100, 
         opacity: 0,     
-        ease: "",
-        duration: 2,    
+        ease: "none",
+        duration: 2,
       }, "+=1.5");
 
       // --- TIMELINE 2: ZOOM & NAVBAR ANIMATION ---

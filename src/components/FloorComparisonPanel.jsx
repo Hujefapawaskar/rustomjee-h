@@ -1171,7 +1171,11 @@ export default function FloorComparisonPanel({
     if (
       !leftPanelRef.current ||
       !rightPanelRef.current ||
-      !toggleButtonRef.current
+      !toggleButtonRef.current ||
+      !toggleArrowRef.current ||
+      !contentWrapperRef.current ||
+      !headerRef.current ||
+      !gridRef.current
     )
       return;
 
