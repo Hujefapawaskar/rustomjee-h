@@ -18,6 +18,7 @@
   --font-futura-lt: Futura-lt, "sans-serif";
 
   --breakpoint-3xl: 160rem;
+  --breakpoint-5xl: 120rem; /* 1920px breakpoint*/
   --breakpoint-4xl: 240rem;
 }
 

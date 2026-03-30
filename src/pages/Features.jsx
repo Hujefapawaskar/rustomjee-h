@@ -157,7 +157,7 @@ const CloseButton = () => {
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-white group-hover:scale-110 transition-transform"
+        className="h-4 w-4 sm:h-5 sm:w-5 md:h-3 md:w-3 lg:h-6 lg:w-6 3xl:h-12 3xl:w-12 4xl:h-20 4xl:w-20 text-white group-hover:scale-110 transition-transform"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -280,7 +280,7 @@ const SplitBackgroundSlide = ({ data }) => {
       {/* Content Layer */}
       <div className="absolute inset-0 flex">
         {/* Left Section - Image (vertically centered) */}
-        <div className="w-[38%] sm:w-[38%] md:w-[40%] lg:w-[42%] xl:w-[40%] 2xl:w-[35%] 3xl:w-[35%] 4xl:w-[35%] relative h-full flex items-center justify-start">
+        <div className="w-[38%] sm:w-[38%] md:w-[40%] lg:w-[42%] xl:w-[40%] 2xl:w-[35%] 5xl:w-[30%] 3xl:w-[30%] 4xl:w-[35%] relative h-full flex items-center justify-start">
           {/* Person Image with hover effect */}
           <div 
             ref={imageContainerRef}
@@ -297,7 +297,7 @@ const SplitBackgroundSlide = ({ data }) => {
         </div>
 
         {/* Right Section - Text Content */}
-        <div className="w-[62%] sm:w-[62%] md:w-[60%] lg:w-[58%] xl:w-[60%] 2xl:w-[60%] 3xl:w-[60%] 4xl:w-[60%] absolute h-full right-0">
+        <div className="w-[62%] sm:w-[62%] md:w-[60%] lg:w-[58%] xl:w-[60%] 2xl:w-[65%] 5xl:w-[70%] 3xl:w-[60%] 4xl:w-[60%] absolute h-full right-0">
           {/* Content Container - Right aligned text */}
           <div className="h-full px-3 py-4 sm:px-4 sm:py-5 md:px-5 md:py-6 lg:px-6 lg:py-8 xl:px-8 xl:py-10 2xl:px-14 2xl:py-16 3xl:px-20 3xl:py-20 4xl:px-28 4xl:py-28 flex flex-col justify-between relative">
             {/* Middle Section - Paragraphs aligned with image top */}
@@ -309,7 +309,7 @@ const SplitBackgroundSlide = ({ data }) => {
                 {renderParagraphs(
                   data.rightSection.paragraphs,
                   "right",
-                  "text-[5px] sm:text-[6px] md:text-[7px] lg:text-[10px] xl:text-[12px] 2xl:text-lg 3xl:text-2xl 4xl:text-4xl",
+                  "text-[5px] sm:text-[6px] md:text-[6.5px] lg:text-[9px] xl:text-[11px] 2xl:text-[15px] 5xl:text-[19px] 3xl:text-2xl 4xl:text-4xl",
                 )}
               </div>
             </div>
@@ -408,7 +408,7 @@ const ThreeArchitectsSlide = ({ data }) => {
                 className="flex-1 flex flex-col group cursor-pointer"
               >
                 {/* Photo */}
-                <div className="w-full h-28 sm:h-32 md:h-40 lg:h-48 xl:h-60 2xl:h-110 3xl:h-[30rem] 4xl:h-[40rem] overflow-hidden relative flex-shrink-0">
+                <div className="w-full h-28 sm:h-32 md:h-50 lg:h-48 xl:h-60 2xl:h-70 5xl:h-110 3xl:h-[30rem] 4xl:h-[40rem] overflow-hidden relative flex-shrink-0">
                   <img
                     src={architect.src}
                     className="w-full h-full object-cover object-[50%_0%] text-element transition-all duration-700 ease-out"
@@ -419,18 +419,18 @@ const ThreeArchitectsSlide = ({ data }) => {
                 </div>
 
                 {/* Name - INCREASED SIZE */}
-                <p className="text-black text-[7px] sm:text-[8px] md:text-[9px] lg:text-[11px] xl:text-sm 2xl:text-2xl 3xl:text-3xl 4xl:text-4xl uppercase font-futura-bk tracking-widest mt-1.5 sm:mt-2 md:mt-2.5 lg:mt-3 xl:mt-3.5 2xl:mt-4 3xl:mt-5 4xl:mt-6 text-center transition-all duration-300 group-hover:tracking-wider text-element">
+                <p className="text-black text-[7px] sm:text-[8px] md:text-[12px] lg:text-[11px] xl:text-sm 2xl:text-[13px] 3xl:text-3xl 4xl:text-5xl uppercase font-futura-bk tracking-widest mt-1.5 sm:mt-2 md:mt-2.5 lg:mt-3 xl:mt-3.5 2xl:mt-4 3xl:mt-5 4xl:mt-7 text-center transition-all duration-300 group-hover:tracking-wider text-element">
                   {architect.name}
                 </p>
 
                 {/* Title - INCREASED SIZE */}
-                <p className="text-black text-[5px] sm:text-[5.5px] md:text-[6.5px] lg:text-[8px] xl:text-[10px] 2xl:text-xs 3xl:text-sm 4xl:text-lg uppercase font-futura-bk opacity-60 mt-0.5 text-center tracking-wider text-element">
+                <p className="text-black text-[5px] sm:text-[5.5px] md:text-[7px] lg:text-[8px] xl:text-[10px] 2xl:text-xs 3xl:text-sm 4xl:text-3xl uppercase font-futura-bk opacity-60 mt-0.5 text-center tracking-wider text-element">
                   {architect.title}
                 </p>
 
                 {/* Description - INCREASED SIZE */}
                 {architect.description && (
-                  <p className="text-black text-[5px] sm:text-[5.5px] md:text-[6px] lg:text-[10px] xl:text-[14px] 2xl:text-[19px] 3xl:text-[23px] 4xl:text-[34px] font-futura-bk leading-relaxed lg:leading-loose mt-1.5 sm:mt-2 md:mt-2.5 lg:mt-3 xl:mt-3.5 2xl:mt-4 3xl:mt-5 4xl:mt-6 text-justify tracking-tight text-element">
+                  <p className="text-black text-[5px] sm:text-[7.5px] md:text-[9px] lg:text-[12px] xl:text-[14px] 2xl:text-[16px] 3xl:text-[23px] 4xl:text-[35px] font-futura-bk leading-relaxed lg:leading-loose mt-1.5 sm:mt-2 md:mt-2.5 lg:mt-3 xl:mt-3.5 2xl:mt-2 3xl:mt-5 4xl:mt-6 text-justify tracking-tight text-element">
                     {architect.description}
                   </p>
                 )}
@@ -513,7 +513,7 @@ const ArchitectIndividualSlide = ({ data }) => {
               paragraph.lines.map((line, lIndex) => (
                 <p
                   key={lIndex}
-                  className={`text-black text-[5px] sm:text-[6px] md:text-[7px] lg:text-[10px] xl:text-[12px] 2xl:text-[17px] 3xl:text-[22.5px] 4xl:text-[34px] font-futura-bk leading-[1.6] sm:leading-[1.6] md:leading-[1.65] lg:leading-[1.7] xl:leading-[1.75] 2xl:leading-[1.8] ${textAlignClass}`}
+                  className={`text-black text-[5px] sm:text-[7px] md:text-[7px] lg:text-[10px] xl:text-[12px] 2xl:text-[13px] 5xl:text-[16px] 3xl:text-[22px] 4xl:text-[34px] font-futura-bk leading-[1.6] sm:leading-[1.6] md:leading-[1.65] lg:leading-[1.7] xl:leading-[1.75] 2xl:leading-[1.8] ${textAlignClass}`}
                 >
                   {line}
                 </p>
@@ -548,7 +548,7 @@ const ArchitectIndividualSlide = ({ data }) => {
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
             </div>
             {/* Right - Text */}
-            <div className="w-[58%] sm:w-[56%] md:w-[54%] lg:w-[52%] xl:w-[50%] 2xl:w-[45%] 3xl:w-[45%] 4xl:w-[45%] px-3 py-4 sm:px-4 sm:py-5 md:px-5 md:py-6 lg:px-6 lg:py-8 xl:px-8 xl:py-10 2xl:px-10 2xl:py-16 3xl:px-14 3xl:py-20 4xl:px-20 4xl:py-28 h-full relative flex flex-col">
+            <div className="w-[58%] sm:w-[56%] md:w-[54%] lg:w-[52%] xl:w-[50%] 2xl:w-[45%] 3xl:w-[45%] 4xl:w-[48%] px-3 py-4 sm:px-4 sm:py-5 md:px-5 md:py-6 lg:px-6 lg:py-8 xl:px-8 xl:py-10 2xl:px-10 2xl:py-16 3xl:px-14 3xl:py-20 4xl:px-20 4xl:py-28 h-full relative flex flex-col">
               {/* Top - Name and Title - dynamically positioned */}
               <div 
                 className="text-right absolute right-3 sm:right-4 md:right-5 lg:right-6 xl:right-8 2xl:right-10 3xl:right-14 4xl:right-20"
@@ -584,7 +584,7 @@ const ArchitectIndividualSlide = ({ data }) => {
         ) : (
           <>
             {/* Left - Text */}
-            <div className="w-[58%] sm:w-[56%] md:w-[54%] lg:w-[52%] xl:w-[50%] 2xl:w-[45%] 3xl:w-[45%] 4xl:w-[45%] px-3 py-4 sm:px-4 sm:py-5 md:px-5 md:py-6 lg:px-6 lg:py-8 xl:px-8 xl:py-10 2xl:px-10 2xl:py-16 3xl:px-14 3xl:py-20 4xl:px-20 4xl:py-28 h-full relative flex flex-col">
+            <div className="w-[58%] sm:w-[56%] md:w-[54%] lg:w-[52%] xl:w-[50%] 2xl:w-[45%] 5xl:w-[45%] 3xl:w-[45%] 4xl:w-[48%] px-3 py-4 sm:px-4 sm:py-5 md:px-5 md:py-6 lg:px-6 lg:py-8 xl:px-8 xl:py-10 2xl:px-10 2xl:py-16 3xl:px-14 3xl:py-20 4xl:px-20 4xl:py-28 h-full relative flex flex-col">
               {/* Top - Name and Title - dynamically positioned */}
               <div 
                 className="text-left absolute left-3 sm:left-4 md:left-5 lg:left-6 xl:left-8 2xl:left-10 3xl:left-14 4xl:left-20"
