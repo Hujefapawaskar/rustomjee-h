@@ -5,6 +5,7 @@ import { GrGallery } from "react-icons/gr";
 import { HiOutlineVideoCamera } from "react-icons/hi2";
 import { FloorPlanIcon } from "./Icons";
 import { LuFileText, LuMapPin } from "react-icons/lu";
+import { AiOutlineHeart } from "react-icons/ai";
 import { useNavigate } from 'react-router-dom';
 
 const NavigationBar = forwardRef(({ 
@@ -53,7 +54,7 @@ const NavigationBar = forwardRef(({
     { key: 'video', Icon: HiOutlineVideoCamera, label: 'Video', route: '/videoplayer', show: showIcons.video },
     { key: 'map', Icon: LuMapPin, label: 'Map', route: '/map', show: showIcons.location },
     { key: 'documents', Icon: LuFileText, label: 'Docs', route: '/documents', show: showIcons.documents },
-    
+    { key: 'wishlist', Icon: AiOutlineHeart, label: 'Wishlist', route: '/wishlist', show: true },
   ];
 
   return (

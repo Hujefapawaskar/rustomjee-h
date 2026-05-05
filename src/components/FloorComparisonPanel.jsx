@@ -3,6 +3,41 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import gsap from "gsap";
 import RadarViewIndicator from "./RadarViewIndicator";
+import { useWishlist } from "../context/WishlistContext";
+import toast from "react-hot-toast";
+
+const LikeButton = ({ item }) => {
+  const { wishlist, toggleWishlist, isInWishlist } = useWishlist();
+  const liked = isInWishlist(item.id);
+
+  const handleLike = (e) => {
+    e.stopPropagation();
+    toggleWishlist(item);
+    if (!liked) {
+      toast.success(`${item.name} added to wishlist!`);
+    } else {
+      toast.error(`${item.name} removed from wishlist!`);
+    }
+  };
+
+  return (
+    <button
+      onClick={handleLike}
+      className={`absolute top-2 right-12 z-50 p-2 rounded-full shadow-[0_2px_8px_rgba(193,154,64,0.3)] bg-white hover:bg-[#faf9f6] transition-colors border ${liked ? 'border-[#C19A40]' : 'border-[#C19A40]/30'}`}
+      title="Like to add to wishlist"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill={liked ? "currentColor" : "none"}
+        stroke={liked ? "currentColor" : "currentColor"}
+        className={`w-5 h-5 ${liked ? "text-[#C19A40]" : "text-[#C19A40]/50"}`}
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+      </svg>
+    </button>
+  );
+};
 
 // Unit Plan SVG Configuration for each floor type
 const UNIT_PLAN_SVG_CONFIG = {
@@ -507,6 +542,8 @@ function BalconyViewCarousel({
     return `/balcony-views/Point ${point}/Floor ${floor}.webp`;
   };
 
+  const imageSrc = isViewAvailable ? getBalconyViewImage(floorNumber, currentPoint) : getBalconyViewImage(floorNumber, lastValidPoint);
+
   useEffect(() => {
     if (imageRef.current && isViewAvailable) {
       gsap.fromTo(
@@ -553,6 +590,13 @@ function BalconyViewCarousel({
 
   return (
     <div className="relative w-full h-full font-futura-bk">
+      {isViewAvailable && (
+        <LikeButton item={{
+          id: `floor-${floorNumber}-balcony-${currentPoint}`,
+          name: `Floor ${floorNumber} Balcony Point ${currentPoint}`,
+          image: getBalconyViewImage(floorNumber, currentPoint)
+        }} />
+      )}
       <BalconyPointTabs
         currentPoint={currentPoint}
         onPointChange={onPointChange}
@@ -749,6 +793,7 @@ export default function FloorComparisonPanel({
   floors,
   lockedFloor = null,
 }) {
+  const { wishlist, toggleWishlist, isInWishlist } = useWishlist();
   const [firstFloor, setFirstFloor] = useState(null);
   const [secondFloor, setSecondFloor] = useState(null);
   const [hoveredFloor, setHoveredFloor] = useState(null);
@@ -1644,6 +1689,11 @@ export default function FloorComparisonPanel({
                                 lineHeight: 0,
                               }}
                             >
+                              <LikeButton item={{
+                                id: `floor-${firstFloorNumber}-plan-${firstFloorIsUnitPlan}`,
+                                name: `Floor ${firstFloorNumber} ${firstFloorIsUnitPlan ? 'Unit' : 'Floor'} Plan`,
+                                image: getFloorPlanImage(firstFloorNumber, firstFloorIsUnitPlan)
+                              }} />
                               <img
                                 src={getFloorPlanImage(
                                   firstFloorNumber,
@@ -1825,6 +1875,11 @@ export default function FloorComparisonPanel({
                                   lineHeight: 0,
                                 }}
                               >
+                                <LikeButton item={{
+                                  id: `floor-${secondFloorNumber}-plan-${secondFloorIsUnitPlan}`,
+                                  name: `Floor ${secondFloorNumber} ${secondFloorIsUnitPlan ? 'Unit' : ''} Plan`,
+                                  image: getFloorPlanImage(secondFloorNumber, secondFloorIsUnitPlan)
+                                }} />
                                 <img
                                   src={getFloorPlanImage(
                                     secondFloorNumber,
