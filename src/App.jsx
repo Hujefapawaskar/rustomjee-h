@@ -12,6 +12,7 @@ import BackButtonHandler from "./components/BackButtonHandler ";
 import Views from "./components/Views";
 import VideoPlayer from "./pages/VideoPlayer";
 import Documents from "./pages/Documents";
+import NotFound from "./pages/NotFound";
 
 const AppContent = () => {
   const location = useLocation();
@@ -41,6 +42,8 @@ const AppContent = () => {
         <Route path="/views" element={<Views />} />
         <Route path="/videoplayer" element={<VideoPlayer />} />
         <Route path="/documents" element={<Documents />} />
+        
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );
