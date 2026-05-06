@@ -4,11 +4,16 @@ import { useNavigate } from "react-router-dom";
 import jsPDF from "jspdf";
 import { QRCodeSVG } from "qrcode.react";
 import { LuFileText } from "react-icons/lu";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { storage, db } from "../firebase";
+import toast from "react-hot-toast";
 
 export default function Wishlist() {
   const { wishlist, clearWishlist } = useWishlist();
   const navigate = useNavigate();
   const [downloading, setDownloading] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState(window.location.href);
   const pdfGeneratedRef = useRef(false);
 
   const generatePDF = async () => {
@@ -116,24 +121,68 @@ export default function Wishlist() {
         }
       }
 
+      // Convert PDF to Blob
+      const pdfBlob = pdf.output("blob");
+      
+      // Upload to Firebase Storage
+      const fileName = `wishlists/Rustomjee_Wishlist_${Date.now()}.pdf`;
+      const storageRef = ref(storage, fileName);
+      
+      const snapshot = await uploadBytes(storageRef, pdfBlob);
+      const downloadUrl = await getDownloadURL(snapshot.ref);
+      
+      setPdfUrl(downloadUrl);
+      
+      // Trigger download for the user directly
       pdf.save("Rustomjee_Wishlist.pdf");
+
+      // Save Analytics to Firestore
+      try {
+        await addDoc(collection(db, "wishlist_analytics"), {
+          type: "download",
+          pdfUrl: downloadUrl,
+          itemsLiked: wishlist.length,
+          floors: wishlist.map(item => item.name),
+          timestamp: serverTimestamp()
+        });
+      } catch (analyticsError) {
+        console.error("Analytics Error:", analyticsError);
+      }
+      
+      toast.success("PDF generated and uploaded!");
+
     } catch (err) {
       console.error("PDF gen failed", err);
+      toast.error("Failed to generate PDF. Check Firebase config.");
     }
     setDownloading(false);
   };
 
-  useEffect(() => {
-    if (wishlist.length > 0 && !pdfGeneratedRef.current) {
-      pdfGeneratedRef.current = true;
-      const timer = setTimeout(() => {
-        generatePDF();
-      }, 2500);
-      return () => clearTimeout(timer);
-    }
-  }, [wishlist]);
+  // useEffect(() => {
+  //   if (wishlist.length > 0 && !pdfGeneratedRef.current) {
+  //     pdfGeneratedRef.current = true;
+  //     const timer = setTimeout(() => {
+  //       generatePDF();
+  //     }, 2500);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [wishlist]);
 
-  const shareUrl = window.location.href; // In real app, this should be a public link to the PDF
+  const handleShareWhatsApp = async () => {
+    try {
+      await addDoc(collection(db, "wishlist_analytics"), {
+        type: "whatsapp_share",
+        pdfUrl: pdfUrl,
+        itemsLiked: wishlist.length,
+        timestamp: serverTimestamp()
+      });
+    } catch(e) {}
+    window.open(`https://wa.me/?text=Check out my floorplan wishlist at Rustomjee: ${encodeURIComponent(pdfUrl)}`, '_blank');
+  };
+
+  const handleQRScan = async () => {
+     // Ideally you would do a redirect page to track scans accurately but this tracks when someone clicks the code itself if you add an onClick.
+  }
   
   if (wishlist.length === 0) {
     return (
@@ -224,7 +273,7 @@ export default function Wishlist() {
               
               <div className="p-4 bg-white rounded-2xl shadow-2xl relative flex items-center justify-center border border-[#C19A40]/30 transform transition-transform hover:scale-105 duration-500">
                 <QRCodeSVG 
-                value={shareUrl} 
+                value={pdfUrl} 
                 size={180} 
                 fgColor="#1D2938" 
                 bgColor="#ffffff"
@@ -251,7 +300,7 @@ export default function Wishlist() {
         <div className="mt-auto pt-8 border-t border-[#C19A40]/30 flex flex-col sm:flex-row gap-4 justify-between items-center">
           <div className="flex flex-col sm:flex-row gap-4">
             <button 
-              onClick={() => window.open(`https://wa.me/?text=Check out my floorplan wishlist at Rustomjee: ${encodeURIComponent(shareUrl)}`, '_blank')}
+              onClick={handleShareWhatsApp}
               className="px-6 py-3 bg-[#C19A40] text-white rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-[#a68434] transition-all border border-[#C19A40]"
             >
               Share on WhatsApp

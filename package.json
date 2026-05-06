@@ -16,6 +16,7 @@
     "@react-three/postprocessing": "^3.0.4",
     "@tailwindcss/vite": "^4.1.14",
     "@types/three": "^0.180.0",
+    "firebase": "^12.12.1",
     "glslCanvas": "^0.2.6",
     "gsap": "^3.13.0",
     "html2canvas": "^1.4.1",
