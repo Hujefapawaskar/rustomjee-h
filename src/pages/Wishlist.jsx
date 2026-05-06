@@ -158,15 +158,15 @@ export default function Wishlist() {
     setDownloading(false);
   };
 
-  // useEffect(() => {
-  //   if (wishlist.length > 0 && !pdfGeneratedRef.current) {
-  //     pdfGeneratedRef.current = true;
-  //     const timer = setTimeout(() => {
-  //       generatePDF();
-  //     }, 2500);
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, [wishlist]);
+  useEffect(() => {
+    if (wishlist.length > 0 && !pdfGeneratedRef.current) {
+      pdfGeneratedRef.current = true;
+      const timer = setTimeout(() => {
+        generatePDF();
+      }, 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [wishlist]);
 
   const handleShareWhatsApp = async () => {
     try {
